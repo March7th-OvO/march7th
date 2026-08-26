@@ -363,7 +363,7 @@ export default function Home() {
       <footer className="site-footer">
         <div className="brand"><span className="brand-mark">M7</span><span>March 7th</span></div>
         <p>献给星穹列车上最闪亮的摄影师。</p>
-        <p className="disclaimer">非官方角色纪念站 · Honkai: Star Rail 及相关角色版权归其权利方所有</p>
+        <p className="disclaimer">© 2026 march7th.moe · All rights reserved · Powered by Cloudflare</p>
       </footer>
     </main>
   );
