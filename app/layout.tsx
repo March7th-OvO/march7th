@@ -11,7 +11,7 @@ export const metadata: Metadata = {
     type: "website",
     images: [
       {
-        url: "https://march7th-memories.hutao7758520.chatgpt.site/train-group.webp",
+        url: "https://assets.march7th.moe/image/backgrounds/hezhao.png",
         width: 2844,
         height: 1600,
         alt: "星穹列车成员在庆典街景前的集体合影",
@@ -22,7 +22,7 @@ export const metadata: Metadata = {
     card: "summary_large_image",
     title: "March 7th · 三月七",
     description: "把今天，拍成明天的回忆。",
-    images: ["https://march7th-memories.hutao7758520.chatgpt.site/train-group.webp"],
+    images: ["https://assets.march7th.moe/image/backgrounds/hezhao.png"],
   },
   icons: {
     icon: "/favicon.svg",
