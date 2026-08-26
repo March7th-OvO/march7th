@@ -1,37 +1,137 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
+import { useGSAP } from "@gsap/react";
+import { gsap } from "gsap";
+import { ScrollTrigger } from "gsap/ScrollTrigger";
 
-const memories = [
+gsap.registerPlugin(useGSAP, ScrollTrigger);
+
+const journeyStages = [
   {
-    stamp: "03 / 07",
-    title: "从冰中醒来",
-    text: "被星穹列车发现的那天，成为了她的新名字。过去仍被封存在六相冰里，但今天已经有了同行的人。",
-    accent: "ICE FILE · 001",
+    place: "六相冰",
+    title: "被列车捡到的那一天",
+    text: "星穹列车在寂静宇宙中发现了一块漂流的六相冰。冰里的少女忘记了姓名与来处，于是把重获新生的日期，写成了自己的名字。",
+    memory: "三月七。先记住今天，昨天以后再说。",
+    symbol: "冰",
+    tone: "ice",
   },
   {
-    stamp: "CLICK!",
-    title: "把每一站拍下来",
-    text: "她用相机收藏旅途：贝洛伯格的雪、仙舟的云、匹诺康尼的梦，还有镜头之外那些吵吵闹闹的同伴。",
-    accent: "PHOTO LOG · 037",
+    place: "黑塔空间站",
+    title: "第一次成为你的向导",
+    text: "反物质军团突袭空间站，她和丹恒在混乱中找到了刚刚醒来的开拓者。这里既是故事的序章，也是列车新同伴第一次并肩作战的地方。",
+    memory: "站稳啦，接下来就跟紧本姑娘。",
+    symbol: "站",
+    tone: "station",
   },
   {
-    stamp: "NEXT →",
-    title: "向未知出发",
-    text: "答案也许还在更远的星海。比起追问昨天，她更愿意先举起相机，和大家一起走向下一站。",
-    accent: "TRAILBLAZE · ∞",
+    place: "贝洛伯格",
+    title: "把风雪留在相片里",
+    text: "在被永冬包围的雅利洛-VI，三月七与同伴穿过上下层区，见证贝洛伯格重新选择未来。雪原很冷，但这趟开拓之旅第一次有了家的温度。",
+    memory: "这么大的雪，当然要多拍几张。",
+    symbol: "雪",
+    tone: "belobog",
+  },
+  {
+    place: "仙舟「罗浮」",
+    title: "云海之外，也有旧梦",
+    text: "列车因一封讯息驶向仙舟，在星核危机与幻胧之乱中和罗浮并肩。后来，她又在这里追索自己的记忆、拜师习剑，把未知练成了新的招式。",
+    memory: "过去没想起来，剑倒是学会了。",
+    symbol: "云",
+    tone: "luofu",
+  },
+  {
+    place: "匹诺康尼",
+    title: "美梦也要按下快门",
+    text: "盛会之星的邀请，把列车带进层层梦境。三月七与伙伴追随钟表匠留下的路，在真假交叠的美梦中，见证匹诺康尼重新听见自由的声音。",
+    memory: "梦会醒，照片里的大家不会消失。",
+    symbol: "梦",
+    tone: "penacony",
+  },
+  {
+    place: "翁法洛斯",
+    title: "记忆终于追上了她",
+    text: "列车抵达永恒之地门外，三月七却因突如其来的异变暂别同行者。六相冰、长夜与被封存的往事在这里重新相遇，她的故事翻到了最接近答案的一页。",
+    memory: "无论记起什么，我都还是我。",
+    symbol: "月",
+    tone: "amphoreus",
+  },
+  {
+    place: "下一站",
+    title: "三月七的旅途还在继续~",
+    text: "相机里还有空白，星轨前方也还有无数没有抵达的世界。答案不必在今天全部找到——只要列车继续前进，新的回忆就会不断显影。",
+    memory: "准备好了吗？这次也要一起拍。",
+    symbol: "∞",
+    tone: "future",
   },
 ];
 
 export default function Home() {
-  const [activeMemory, setActiveMemory] = useState(0);
+  const [activeProfileCard, setActiveProfileCard] = useState(0);
   const [menuOpen, setMenuOpen] = useState(false);
+  const journeyRef = useRef<HTMLElement>(null);
 
   useEffect(() => {
     const close = () => setMenuOpen(false);
     window.addEventListener("resize", close);
     return () => window.removeEventListener("resize", close);
   }, []);
+
+  useGSAP(
+    () => {
+      if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+
+      const pinWindow = journeyRef.current?.querySelector<HTMLElement>(".journey-pin");
+      const panels = gsap.utils.toArray<HTMLElement>(".journey-panel", journeyRef.current);
+      const routeStops = gsap.utils.toArray<HTMLElement>(".journey-route-stop", journeyRef.current);
+      const progressFill = journeyRef.current?.querySelector<HTMLElement>(".journey-progress-fill");
+
+      if (!pinWindow || panels.length < 2 || !progressFill) return;
+
+      gsap.set(panels.slice(1), { yPercent: 108, scale: 0.86, opacity: 0.18 });
+      gsap.set(routeStops.slice(1), { opacity: 0.28 });
+      gsap.set(progressFill, { scaleY: 0, transformOrigin: "top center" });
+
+      const timeline = gsap.timeline({
+        defaults: { ease: "none" },
+        scrollTrigger: {
+          trigger: pinWindow,
+          start: "top top",
+          end: () => `+=${window.innerHeight * (panels.length - 1)}`,
+          pin: true,
+          scrub: 0.85,
+          anticipatePin: 1,
+          invalidateOnRefresh: true,
+        },
+      });
+
+      // 每次滚动推进一格：旧底片向上缩暗，新底片从窗口底部完成显影。
+      panels.slice(1).forEach((panel, panelIndex) => {
+        const previousPanel = panels[panelIndex];
+        const routeStop = routeStops[panelIndex + 1];
+        const at = panelIndex;
+
+        timeline
+          .to(previousPanel, {
+            yPercent: -14,
+            scale: 0.88,
+            opacity: 0.12,
+            filter: "blur(10px)",
+            duration: 0.48,
+          }, at)
+          .to(panel, {
+            yPercent: 0,
+            scale: 1,
+            opacity: 1,
+            duration: 0.72,
+          }, at)
+          .to(routeStop, { opacity: 1, duration: 0.18 }, at + 0.46);
+      });
+
+      timeline.to(progressFill, { scaleY: 1, duration: panels.length - 1 }, 0);
+    },
+    { scope: journeyRef },
+  );
 
   return (
     <main>
@@ -52,7 +152,7 @@ export default function Home() {
         </button>
         <nav className={menuOpen ? "nav-links is-open" : "nav-links"}>
           <a href="#profile" onClick={() => setMenuOpen(false)}>角色档案</a>
-          <a href="#memories" onClick={() => setMenuOpen(false)}>记忆相簿</a>
+          <a href="#memories" onClick={() => setMenuOpen(false)}>旅途时间轴</a>
           <a href="#forms" onClick={() => setMenuOpen(false)}>旅途剪影</a>
         </nav>
       </header>
@@ -62,7 +162,7 @@ export default function Home() {
         <div className="hero-orbit orbit-two" aria-hidden="true" />
         <div className="hero-copy">
           <p className="eyebrow">ASTRAL EXPRESS · PASSENGER NO. 7</p>
-          <h1>
+          <h1 className="max-w-6xl">
             把今天，<br />
             <em>拍成明天的回忆。</em>
           </h1>
@@ -107,55 +207,108 @@ export default function Home() {
           <h2>遗失过去的人，<br /><span>最认真地收藏现在。</span></h2>
         </div>
 
-        <div className="profile-grid">
-          <article className="profile-card intro-card">
+        <div
+          className="profile-grid"
+          data-active-card={activeProfileCard}
+          onMouseLeave={() => setActiveProfileCard(0)}
+        >
+          <article
+            className={activeProfileCard === 0 ? "profile-card intro-card is-active" : "profile-card intro-card"}
+            tabIndex={0}
+            aria-label="个性档案"
+            onMouseEnter={() => setActiveProfileCard(0)}
+            onFocus={() => setActiveProfileCard(0)}
+          >
             <span className="card-index">01</span>
-            <p>「咱可不是什么神秘人物，只是个热爱拍照、偶尔会把事情搞砸的普通列车乘客啦！」</p>
-            <footer><span>个性</span><strong>明快 · 真诚 · 好奇</strong></footer>
+            <div className="profile-symbol intro-symbol" aria-hidden="true">M7</div>
+            <div className="profile-expanded">
+              <p>「咱可不是什么神秘人物，只是个热爱拍照、偶尔会把事情搞砸的普通列车乘客啦！」</p>
+              <footer><span>个性</span><strong>明快 · 真诚 · 好奇</strong></footer>
+            </div>
           </article>
-          <article className="profile-card ice-card">
+          <article
+            className={activeProfileCard === 1 ? "profile-card ice-card is-active" : "profile-card ice-card"}
+            tabIndex={0}
+            aria-label="记忆起点档案"
+            onMouseEnter={() => setActiveProfileCard(1)}
+            onFocus={() => setActiveProfileCard(1)}
+            onBlur={() => setActiveProfileCard(0)}
+          >
             <span className="card-index">02</span>
-            <div className="ice-symbol" aria-hidden="true">✦</div>
-            <footer><span>记忆起点</span><strong>六相冰</strong></footer>
+            <div className="profile-symbol ice-symbol" aria-hidden="true">✦</div>
+            <div className="profile-expanded">
+              <p>「从六相冰中醒来的那天，她没有找到过去，却在星穹列车上遇见了可以一同前往未来的人。」</p>
+              <footer><span>记忆起点</span><strong>六相冰</strong></footer>
+            </div>
           </article>
-          <article className="profile-card camera-card">
+          <article
+            className={activeProfileCard === 2 ? "profile-card camera-card is-active" : "profile-card camera-card"}
+            tabIndex={0}
+            aria-label="摄影档案"
+            onMouseEnter={() => setActiveProfileCard(2)}
+            onFocus={() => setActiveProfileCard(2)}
+            onBlur={() => setActiveProfileCard(0)}
+          >
             <span className="card-index">03</span>
-            <div className="camera-copy">
-              <small>PHOTO COUNT</small>
-              <strong>∞</strong>
-              <p>照片不会忘记，<br />所以她负责按下快门。</p>
+            <div className="profile-symbol camera-symbol" aria-hidden="true">∞</div>
+            <div className="profile-expanded">
+              <div className="camera-copy">
+                <small>PHOTO COUNT</small>
+                <strong>∞</strong>
+                <p>照片不会忘记，<br />所以她负责按下快门。</p>
+              </div>
             </div>
           </article>
         </div>
       </section>
 
-      <section className="memory-section" id="memories">
-        <div className="memory-stage">
-          <div className="memory-counter">
-            <span>0{activeMemory + 1}</span>
-            <i />
-            <span>0{memories.length}</span>
+      <section className="journey-section" id="memories" ref={journeyRef}>
+        <div className="journey-pin">
+          <div className="journey-heading">
+            <p>沿着星轨，向下翻阅</p>
+            <span>SCROLL TO DEVELOP</span>
           </div>
-          <div className="memory-copy" aria-live="polite">
-            <p>{memories[activeMemory].accent}</p>
-            <h2>{memories[activeMemory].title}</h2>
-            <div className="memory-stamp">{memories[activeMemory].stamp}</div>
-            <p className="memory-text">{memories[activeMemory].text}</p>
-          </div>
-          <div className="memory-controls" aria-label="切换记忆卡片">
-            {memories.map((memory, index) => (
-              <button
-                key={memory.title}
-                className={index === activeMemory ? "active" : ""}
-                type="button"
-                aria-label={`查看：${memory.title}`}
-                aria-current={index === activeMemory}
-                onClick={() => setActiveMemory(index)}
-              >
-                <span>0{index + 1}</span>{memory.title}
-              </button>
+
+          <div className="journey-route" aria-hidden="true">
+            <div className="journey-progress-track">
+              <i className="journey-progress-fill" />
+            </div>
+            {journeyStages.map((stage) => (
+              <div className="journey-route-stop" key={stage.place}>
+                <i />
+                <span>{stage.place}</span>
+              </div>
             ))}
           </div>
+
+          <div className="journey-window" aria-label="三月七的旅途时间轴">
+            {journeyStages.map((stage, index) => (
+              <article
+                className="journey-panel"
+                data-tone={stage.tone}
+                key={stage.place}
+                style={{ zIndex: index + 1 }}
+              >
+                <div className="journey-panel-copy">
+                  <div className="journey-place">
+                    <span>{String(index + 1).padStart(2, "0")}</span>
+                    <p>{stage.place}</p>
+                  </div>
+                  <h2>{stage.title}</h2>
+                  <p className="journey-description">{stage.text}</p>
+                  <blockquote>{stage.memory}</blockquote>
+                </div>
+                <div className="journey-visual" aria-hidden="true">
+                  <div className="journey-orbit orbit-outer" />
+                  <div className="journey-orbit orbit-inner" />
+                  <span>{stage.symbol}</span>
+                  <p>MARCH 7TH<br />MEMORY ARCHIVE</p>
+                </div>
+              </article>
+            ))}
+          </div>
+
+          <p className="journey-instruction">继续向下滚动 <span>↓</span></p>
         </div>
       </section>
 
