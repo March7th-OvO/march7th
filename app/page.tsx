@@ -196,7 +196,7 @@ export default function Home() {
           <div className="visual-frame">
             <img
               className="hero-art"
-              src="/train-group.webp"
+              src="https://assets.march7th.moe/image/backgrounds/hezhao.png"
               alt="星穹列车成员在庆典街景前的集体合影"
             />
           </div>
