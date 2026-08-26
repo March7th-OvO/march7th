@@ -1,11 +1,6 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import { useGSAP } from "@gsap/react";
-import { gsap } from "gsap";
-import { ScrollTrigger } from "gsap/ScrollTrigger";
-
-gsap.registerPlugin(useGSAP, ScrollTrigger);
 
 const journeyStages = [
   {
@@ -77,61 +72,78 @@ export default function Home() {
     return () => window.removeEventListener("resize", close);
   }, []);
 
-  useGSAP(
-    () => {
+  useEffect(() => {
+    let cleanup: (() => void) | undefined;
+
+    const initGsap = async () => {
       if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
 
-      const pinWindow = journeyRef.current?.querySelector<HTMLElement>(".journey-pin");
-      const panels = gsap.utils.toArray<HTMLElement>(".journey-panel", journeyRef.current);
-      const routeStops = gsap.utils.toArray<HTMLElement>(".journey-route-stop", journeyRef.current);
-      const progressFill = journeyRef.current?.querySelector<HTMLElement>(".journey-progress-fill");
+      const { gsap } = await import("gsap");
+      const { ScrollTrigger } = await import("gsap/ScrollTrigger");
+
+      gsap.registerPlugin(ScrollTrigger);
+
+      const root = journeyRef.current;
+      if (!root) return;
+
+      const pinWindow = root.querySelector<HTMLElement>(".journey-pin");
+      const panels = gsap.utils.toArray<HTMLElement>(".journey-panel", root);
+      const routeStops = gsap.utils.toArray<HTMLElement>(".journey-route-stop", root);
+      const progressFill = root.querySelector<HTMLElement>(".journey-progress-fill");
 
       if (!pinWindow || panels.length < 2 || !progressFill) return;
 
-      gsap.set(panels.slice(1), { yPercent: 108, scale: 0.86, opacity: 0.18 });
-      gsap.set(routeStops.slice(1), { opacity: 0.28 });
-      gsap.set(progressFill, { scaleY: 0, transformOrigin: "top center" });
+      const ctx = gsap.context(() => {
+        gsap.set(panels.slice(1), { yPercent: 108, scale: 0.86, opacity: 0.18 });
+        gsap.set(routeStops.slice(1), { opacity: 0.28 });
+        gsap.set(progressFill, { scaleY: 0, transformOrigin: "top center" });
 
-      const timeline = gsap.timeline({
-        defaults: { ease: "none" },
-        scrollTrigger: {
-          trigger: pinWindow,
-          start: "top top",
-          end: () => `+=${window.innerHeight * (panels.length - 1)}`,
-          pin: true,
-          scrub: 0.85,
-          anticipatePin: 1,
-          invalidateOnRefresh: true,
-        },
-      });
+        const timeline = gsap.timeline({
+          defaults: { ease: "none" },
+          scrollTrigger: {
+            trigger: pinWindow,
+            start: "top top",
+            end: () => `+=${window.innerHeight * (panels.length - 1)}`,
+            pin: true,
+            scrub: 0.85,
+            anticipatePin: 1,
+            invalidateOnRefresh: true,
+          },
+        });
 
-      // 每次滚动推进一格：旧底片向上缩暗，新底片从窗口底部完成显影。
-      panels.slice(1).forEach((panel, panelIndex) => {
-        const previousPanel = panels[panelIndex];
-        const routeStop = routeStops[panelIndex + 1];
-        const at = panelIndex;
+        // 每次滚动推进一格：旧底片向上缩暗，新底片从窗口底部完成显影。
+        panels.slice(1).forEach((panel, panelIndex) => {
+          const previousPanel = panels[panelIndex];
+          const routeStop = routeStops[panelIndex + 1];
+          const at = panelIndex;
 
-        timeline
-          .to(previousPanel, {
-            yPercent: -14,
-            scale: 0.88,
-            opacity: 0.12,
-            filter: "blur(10px)",
-            duration: 0.48,
-          }, at)
-          .to(panel, {
-            yPercent: 0,
-            scale: 1,
-            opacity: 1,
-            duration: 0.72,
-          }, at)
-          .to(routeStop, { opacity: 1, duration: 0.18 }, at + 0.46);
-      });
+          timeline
+            .to(previousPanel, {
+              yPercent: -14,
+              scale: 0.88,
+              opacity: 0.12,
+              filter: "blur(10px)",
+              duration: 0.48,
+            }, at)
+            .to(panel, {
+              yPercent: 0,
+              scale: 1,
+              opacity: 1,
+              duration: 0.72,
+            }, at)
+            .to(routeStop, { opacity: 1, duration: 0.18 }, at + 0.46);
+        });
 
-      timeline.to(progressFill, { scaleY: 1, duration: panels.length - 1 }, 0);
-    },
-    { scope: journeyRef },
-  );
+        timeline.to(progressFill, { scaleY: 1, duration: panels.length - 1 }, 0);
+      }, root);
+
+      cleanup = () => ctx.revert();
+    };
+
+    void initGsap();
+
+    return () => cleanup?.();
+  }, []);
 
   return (
     <main>
