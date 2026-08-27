@@ -86,12 +86,13 @@ export default function Home() {
       const root = journeyRef.current;
       if (!root) return;
 
-      const pinWindow = root.querySelector<HTMLElement>(".journey-pin");
+      const scrollWindow = root.querySelector<HTMLElement>(".journey-window");
+      const scrollTrack = root.querySelector<HTMLElement>(".journey-scroll-track");
       const panels = gsap.utils.toArray<HTMLElement>(".journey-panel", root);
       const routeStops = gsap.utils.toArray<HTMLElement>(".journey-route-stop", root);
       const progressFill = root.querySelector<HTMLElement>(".journey-progress-fill");
 
-      if (!pinWindow || panels.length < 2 || !progressFill) return;
+      if (!scrollWindow || !scrollTrack || panels.length < 2 || !progressFill) return;
 
       const ctx = gsap.context(() => {
         gsap.set(panels.slice(1), { yPercent: 108, scale: 0.86, opacity: 0.18 });
@@ -101,12 +102,11 @@ export default function Home() {
         const timeline = gsap.timeline({
           defaults: { ease: "none" },
           scrollTrigger: {
-            trigger: pinWindow,
+            trigger: scrollTrack,
+            scroller: scrollWindow,
             start: "top top",
-            end: () => `+=${window.innerHeight * (panels.length - 1)}`,
-            pin: true,
+            end: "bottom bottom",
             scrub: 0.85,
-            anticipatePin: 1,
             invalidateOnRefresh: true,
           },
         });
@@ -277,8 +277,8 @@ export default function Home() {
       <section className="journey-section" id="memories" ref={journeyRef}>
         <div className="journey-pin">
           <div className="journey-heading">
-            <p>沿着星轨，向下翻阅</p>
-            <span>SCROLL TO DEVELOP</span>
+            <p>一扇窗口，装下整段星轨</p>
+            <span>MEMORY ARCHIVE / 旅途时间轴</span>
           </div>
 
           <div className="journey-route" aria-hidden="true">
@@ -293,34 +293,57 @@ export default function Home() {
             ))}
           </div>
 
-          <div className="journey-window" aria-label="三月七的旅途时间轴">
-            {journeyStages.map((stage, index) => (
-              <article
-                className="journey-panel"
-                data-tone={stage.tone}
-                key={stage.place}
-                style={{ zIndex: index + 1 }}
+          <div className="journey-window-shell">
+            <div className="journey-window-bar" aria-hidden="true">
+              <span className="journey-window-dots"><i /><i /><i /></span>
+              <strong>M7_MEMORY_VIEWER</strong>
+              <span>把光标移入窗口后滚动</span>
+            </div>
+            <div
+              className="journey-window"
+              tabIndex={0}
+              aria-label="三月七的旅途时间轴，可在窗口内滚动浏览"
+              aria-describedby="journey-window-help"
+            >
+              <div
+                className="journey-scroll-track"
+                style={{ height: `${journeyStages.length * 100}%` }}
               >
-                <div className="journey-panel-copy">
-                  <div className="journey-place">
-                    <span>{String(index + 1).padStart(2, "0")}</span>
-                    <p>{stage.place}</p>
-                  </div>
-                  <h2>{stage.title}</h2>
-                  <p className="journey-description">{stage.text}</p>
-                  <blockquote>{stage.memory}</blockquote>
+                <div
+                  className="journey-window-viewport"
+                  style={{ height: `${100 / journeyStages.length}%` }}
+                >
+                  {journeyStages.map((stage, index) => (
+                    <article
+                      className="journey-panel"
+                      data-tone={stage.tone}
+                      key={stage.place}
+                      style={{ zIndex: index + 1 }}
+                    >
+                      <div className="journey-panel-copy">
+                        <div className="journey-place">
+                          <span>{String(index + 1).padStart(2, "0")}</span>
+                          <p>{stage.place}</p>
+                        </div>
+                        <h2>{stage.title}</h2>
+                        <p className="journey-description">{stage.text}</p>
+                        <blockquote>{stage.memory}</blockquote>
+                      </div>
+                      <div className="journey-visual" aria-hidden="true">
+                        <div className="journey-orbit orbit-outer" />
+                        <div className="journey-orbit orbit-inner" />
+                        <span>{stage.symbol}</span>
+                        <p>MARCH 7TH<br />MEMORY ARCHIVE</p>
+                      </div>
+                    </article>
+                  ))}
                 </div>
-                <div className="journey-visual" aria-hidden="true">
-                  <div className="journey-orbit orbit-outer" />
-                  <div className="journey-orbit orbit-inner" />
-                  <span>{stage.symbol}</span>
-                  <p>MARCH 7TH<br />MEMORY ARCHIVE</p>
-                </div>
-              </article>
-            ))}
+              </div>
+            </div>
+            <p className="journey-instruction" id="journey-window-help">
+              窗口内滚动浏览，页面不会被时间轴占满 <span>↓</span>
+            </p>
           </div>
-
-          <p className="journey-instruction">继续向下滚动 <span>↓</span></p>
         </div>
       </section>
 
