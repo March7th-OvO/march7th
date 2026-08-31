@@ -1,0 +1,32 @@
+/* 三种形态卡片：桌面端由整张卡片触发立绘显影，触屏端保持立绘可见。 */
+.forms-grid .form-card > div:nth-child(2) img {
+  pointer-events: none;
+  user-select: none;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .forms-grid .form-card > div:nth-child(2) img {
+    opacity: 0;
+    clip-path: inset(0 0 0 100%);
+    transform: translateX(14%) scale(1.02);
+    transform-origin: right center;
+    transition:
+      clip-path .72s cubic-bezier(.22, 1, .36, 1),
+      transform .82s cubic-bezier(.22, 1, .36, 1),
+      opacity .3s ease;
+    will-change: clip-path, transform, opacity;
+  }
+
+  .forms-grid .form-card:hover > div:nth-child(2) img {
+    opacity: 1;
+    clip-path: inset(0 0 0 0);
+    transform: translateX(0) scale(1);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .forms-grid .form-card > div:nth-child(2) img {
+    transition: none !important;
+    transform: none !important;
+  }
+}
