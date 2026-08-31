@@ -1,0 +1,233 @@
+@import url("https://fonts.proxy.ustclug.org/css2?family=League+Script&display=swap");
+
+.hero-photo-trigger {
+  position: relative;
+  cursor: zoom-in;
+  transform-style: preserve-3d;
+  transition: transform .42s cubic-bezier(.22,1,.36,1), box-shadow .42s ease;
+}
+.hero-photo-trigger::before {
+  content: "";
+  position: absolute;
+  z-index: 3;
+  inset: 15px;
+  pointer-events: none;
+  border-radius: inherit;
+  background: linear-gradient(118deg, rgba(255,255,255,.34), rgba(255,255,255,.04) 38%, rgba(255,255,255,.16) 58%, transparent 74%);
+  mix-blend-mode: screen;
+  opacity: .65;
+}
+.hero-photo-trigger::after {
+  content: "点击放大 · 3D PHOTO";
+  position: absolute;
+  z-index: 5;
+  right: 26px;
+  bottom: 24px;
+  padding: 8px 11px;
+  color: rgba(24,36,66,.78);
+  background: rgba(255,255,255,.78);
+  border: 1px solid rgba(255,255,255,.8);
+  border-radius: 999px;
+  box-shadow: 0 7px 20px rgba(24,36,66,.08);
+  backdrop-filter: blur(10px);
+  font-size: 8px;
+  font-weight: 900;
+  letter-spacing: .14em;
+  opacity: 0;
+  transform: translateY(5px);
+  transition: opacity .24s ease, transform .24s ease;
+}
+.hero-photo-trigger:hover,
+.hero-photo-trigger:focus-visible {
+  transform: rotate(1.1deg) perspective(900px) rotateX(-1.4deg) rotateY(2deg) translateY(-5px);
+  box-shadow: 0 42px 90px rgba(54,93,132,.23);
+  outline: none;
+}
+.hero-photo-trigger:hover::after,
+.hero-photo-trigger:focus-visible::after { opacity: 1; transform: translateY(0); }
+
+.hero-photo-lightbox {
+  position: fixed;
+  z-index: 9999;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  padding: 28px;
+  background: rgba(13,18,32,.76);
+  backdrop-filter: blur(18px) saturate(.8);
+  animation: photoLightboxIn .28s ease both;
+}
+.photo-lightbox-close {
+  position: absolute;
+  z-index: 3;
+  top: 24px;
+  right: 28px;
+  width: 46px;
+  height: 46px;
+  display: grid;
+  place-items: center;
+  padding: 0;
+  color: white;
+  background: rgba(255,255,255,.1);
+  border: 1px solid rgba(255,255,255,.24);
+  border-radius: 50%;
+  cursor: pointer;
+  font-size: 28px;
+  line-height: 1;
+  backdrop-filter: blur(10px);
+}
+.photo-stage {
+  width: min(1180px, 94vw);
+  display: grid;
+  justify-items: center;
+  gap: 24px;
+  perspective: 1800px;
+}
+.photo-tilt-shell {
+  --photo-rx: 0deg;
+  --photo-ry: 0deg;
+  --shine-x: 50%;
+  --shine-y: 35%;
+  width: min(1080px, 88vw);
+  aspect-ratio: 2844 / 1600;
+  transform: rotateX(var(--photo-rx)) rotateY(var(--photo-ry));
+  transform-style: preserve-3d;
+  transition: transform .18s ease-out;
+}
+.photo-3d-card {
+  width: 100%;
+  height: 100%;
+  position: relative;
+  transform-style: preserve-3d;
+  transition: transform .85s cubic-bezier(.22,1,.36,1);
+}
+.photo-tilt-shell.is-flipped .photo-3d-card { transform: rotateY(180deg); }
+.photo-face {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  backface-visibility: hidden;
+  border-radius: 10px 42px 10px 42px;
+  box-shadow: 0 44px 110px rgba(0,0,0,.34), 0 4px 10px rgba(0,0,0,.2);
+}
+.photo-front {
+  padding: clamp(10px, 1.15vw, 16px);
+  background: rgba(250,250,250,.96);
+  border: 1px solid rgba(255,255,255,.9);
+}
+.photo-front img {
+  width: 100%;
+  height: 100%;
+  display: block;
+  object-fit: cover;
+  border-radius: 6px 32px 6px 32px;
+  user-select: none;
+}
+.photo-laminate {
+  position: absolute;
+  z-index: 2;
+  inset: 0;
+  pointer-events: none;
+  border-radius: inherit;
+  background:
+    radial-gradient(circle at var(--shine-x) var(--shine-y), rgba(255,255,255,.5) 0, rgba(255,255,255,.18) 13%, transparent 34%),
+    linear-gradient(122deg, transparent 15%, rgba(255,255,255,.18) 34%, rgba(255,255,255,.48) 43%, rgba(255,255,255,.09) 51%, transparent 66%);
+  mix-blend-mode: screen;
+  opacity: .9;
+}
+.photo-edge-highlight {
+  position: absolute;
+  z-index: 3;
+  inset: 2px;
+  pointer-events: none;
+  border: 1px solid rgba(255,255,255,.72);
+  border-radius: inherit;
+  box-shadow: inset 0 0 18px rgba(255,255,255,.25);
+}
+.photo-back {
+  padding: clamp(26px, 4vw, 54px);
+  color: #50545c;
+  background:
+    linear-gradient(rgba(255,255,255,.2), rgba(255,255,255,.2)),
+    repeating-linear-gradient(0deg, rgba(0,0,0,.018) 0 1px, transparent 1px 4px),
+    #d9dadd;
+  border: 1px solid rgba(255,255,255,.58);
+  transform: rotateY(180deg);
+}
+.photo-back::before {
+  content: "";
+  position: absolute;
+  inset: 18px;
+  border: 1px solid rgba(79,83,91,.13);
+  border-radius: 6px 30px 6px 30px;
+}
+.photo-back-mark {
+  position: relative;
+  z-index: 2;
+  font-size: clamp(9px, .8vw, 12px);
+  font-weight: 800;
+  letter-spacing: .2em;
+  opacity: .48;
+}
+.photo-back-lines {
+  position: absolute;
+  left: 7%;
+  top: 43%;
+  width: 36%;
+  display: grid;
+  gap: 18px;
+}
+.photo-back-lines i { height: 1px; background: rgba(79,83,91,.13); }
+.photo-signature {
+  position: absolute;
+  right: 7%;
+  bottom: 7%;
+  font-family: "League Script", cursive;
+  font-size: clamp(34px, 4.2vw, 62px);
+  line-height: 1;
+  color: rgba(43,46,53,.78);
+  transform: rotate(-5deg);
+  user-select: none;
+}
+.photo-viewer-controls {
+  display: flex;
+  align-items: center;
+  gap: 18px;
+  color: rgba(255,255,255,.7);
+}
+.photo-viewer-controls button {
+  min-height: 44px;
+  display: inline-flex;
+  align-items: center;
+  gap: 14px;
+  padding: 0 18px;
+  color: #182442;
+  background: rgba(255,255,255,.94);
+  border: 0;
+  border-radius: 999px;
+  cursor: pointer;
+  font-size: 12px;
+  font-weight: 800;
+}
+.photo-viewer-controls p { margin: 0; font-size: 10px; letter-spacing: .08em; }
+
+@keyframes photoLightboxIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@media (max-width: 680px) {
+  .hero-photo-trigger::after { display: none; }
+  .hero-photo-lightbox { padding: 18px; }
+  .photo-stage { width: 100%; gap: 18px; }
+  .photo-tilt-shell { width: 94vw; }
+  .photo-viewer-controls { flex-direction: column; gap: 10px; text-align: center; }
+  .photo-signature { font-size: clamp(30px, 11vw, 48px); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .hero-photo-trigger,
+  .photo-tilt-shell,
+  .photo-3d-card,
+  .hero-photo-lightbox { transition: none; animation: none; }
+}
