@@ -7,6 +7,6 @@
   "assets": {
     // Vite 构建后会在生成的 Wrangler 配置中自动补齐静态资源目录。
     "binding": "ASSETS",
-    "not_found_handling": "single-page-application"
+    "not_found_handling": "404-page"
   }
 }

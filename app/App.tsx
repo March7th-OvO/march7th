@@ -1,6 +1,3 @@
-import "./index.css";
-import "./forms-accordion.css";
-import "./hero-photo.css";
 import FormsScrollFade from "./forms-scroll-fade";
 import HeroPhotoEnhancer from "./hero-photo-enhancer";
 import Home from "./Home";
