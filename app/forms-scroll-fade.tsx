@@ -18,28 +18,30 @@ export default function FormsScrollFade() {
       gsap.registerPlugin(ScrollTrigger);
 
       const root = document.querySelector<HTMLElement>(".forms-section");
-      if (!root) return;
+      const grid = root?.querySelector<HTMLElement>(".forms-grid");
+      if (!root || !grid) return;
 
-      const cards = gsap.utils.toArray<HTMLElement>(".form-card", root);
+      const cards = gsap.utils.toArray<HTMLElement>(".form-card", grid);
       if (!cards.length) return;
 
       const ctx = gsap.context(() => {
-        cards.forEach((card, index) => {
-          const startPercent = 90 - index * 5;
-          const endPercent = 62 - index * 5;
+        gsap.set(cards, { autoAlpha: 0 });
 
-          gsap.fromTo(card, { autoAlpha: 0 }, {
-            autoAlpha: 1,
-            ease: "none",
-            scrollTrigger: {
-              trigger: card,
-              start: `top ${startPercent}%`,
-              end: `top ${endPercent}%`,
-              scrub: 0.65,
-              invalidateOnRefresh: true,
-            },
-          });
+        const timeline = gsap.timeline({
+          defaults: { ease: "none" },
+          scrollTrigger: {
+            trigger: grid,
+            start: "top 96%",
+            end: "top 48%",
+            scrub: 0.7,
+            invalidateOnRefresh: true,
+          },
         });
+
+        timeline
+          .to(cards[0], { autoAlpha: 1, duration: 1 }, 0)
+          .to(cards[1], { autoAlpha: 1, duration: 1 }, 0.7)
+          .to(cards[2], { autoAlpha: 1, duration: 1 }, 1.4);
       }, root);
 
       cleanup = () => ctx.revert();
