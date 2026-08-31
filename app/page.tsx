@@ -2,6 +2,14 @@
 
 import { useEffect, useRef, useState } from "react";
 
+const assetHost = "https://assets.march7th.moe";
+
+const imageUrl = (path: string, width: number, quality = 78) =>
+  `${assetHost}/cdn-cgi/image/width=${width},quality=${quality},format=auto/${path}`;
+
+const imageSrcSet = (path: string, widths: number[], quality = 78) =>
+  widths.map((width) => `${imageUrl(path, width, quality)} ${width}w`).join(", ");
+
 const journeyStages = [
   {
     place: "六相冰",
@@ -196,8 +204,15 @@ export default function Home() {
           <div className="visual-frame">
             <img
               className="hero-art"
-              src="https://assets.march7th.moe/image/backgrounds/hezhao.png"
+              src={imageUrl("image/backgrounds/hezhao.png", 1280, 78)}
+              srcSet={imageSrcSet("image/backgrounds/hezhao.png", [640, 960, 1280, 1600], 78)}
+              sizes="(max-width: 680px) 82vw, (max-width: 980px) 75vw, (min-width: 1455px) 640px, 44vw"
+              width={2844}
+              height={1600}
               alt="星穹列车成员在庆典街景前的集体合影"
+              loading="eager"
+              decoding="async"
+              fetchPriority="high"
             />
           </div>
           <div className="polaroid-note note-top">
@@ -355,21 +370,54 @@ export default function Home() {
         <div className="forms-grid">
           <article className="form-card preservation">
             <div className="form-top"><span>ICE</span><span>存护</span></div>
-            <div className="form-number">01</div>
+            <div className="relative -mx-7 mb-7 mt-6 h-80 overflow-hidden border-y border-current/10 bg-white/10">
+              <img
+                className="block h-full w-full object-contain object-bottom"
+                src={imageUrl("image/illustration/cunhu.jpg", 720, 78)}
+                srcSet={imageSrcSet("image/illustration/cunhu.jpg", [360, 540, 720, 960], 78)}
+                sizes="(max-width: 680px) calc(100vw - 40px), (max-width: 980px) 88vw, 400px"
+                alt="三月七存护形态立绘"
+                loading="lazy"
+                decoding="async"
+              />
+              <span className="absolute bottom-3 left-7 text-[96px] font-black leading-[.85] tracking-[-.1em] opacity-20" aria-hidden="true">01</span>
+            </div>
             <h3>最初的三月七</h3>
             <p>以六相冰守护同伴，用反击回应每一次袭击。她是开拓旅途里最早握住你的那只手。</p>
             <footer>SHIELD THE MOMENT <span>✦</span></footer>
           </article>
           <article className="form-card hunt">
             <div className="form-top"><span>IMAGINARY</span><span>巡猎</span></div>
-            <div className="form-number">02</div>
+            <div className="relative -mx-7 mb-7 mt-6 h-80 overflow-hidden border-y border-current/10 bg-white/10">
+              <img
+                className="block h-full w-full object-contain object-bottom"
+                src={imageUrl("image/illustration/xunlie.jpg", 720, 78)}
+                srcSet={imageSrcSet("image/illustration/xunlie.jpg", [360, 540, 720, 960], 78)}
+                sizes="(max-width: 680px) calc(100vw - 40px), (max-width: 980px) 88vw, 400px"
+                alt="三月七巡猎形态立绘"
+                loading="lazy"
+                decoding="async"
+              />
+              <span className="absolute bottom-3 left-7 text-[96px] font-black leading-[.85] tracking-[-.1em] opacity-20" aria-hidden="true">02</span>
+            </div>
             <h3>剑影里的新招式</h3>
             <p>拜师习剑，把每一场战斗也变成成长纪念。轻快、专注，依旧是熟悉的元气满满。</p>
             <footer>CAPTURE THE MOVE <span>↗</span></footer>
           </article>
           <article className="form-card evernight">
             <div className="form-top"><span>REMEMBRANCE</span><span>长夜月</span></div>
-            <div className="form-number">03</div>
+            <div className="relative -mx-7 mb-7 mt-6 h-80 overflow-hidden border-y border-current/10 bg-white/10">
+              <img
+                className="block h-full w-full object-contain object-bottom"
+                src={imageUrl("image/illustration/jiyi.jpg", 720, 78)}
+                srcSet={imageSrcSet("image/illustration/jiyi.jpg", [360, 540, 720, 960], 78)}
+                sizes="(max-width: 680px) calc(100vw - 40px), (max-width: 980px) 88vw, 400px"
+                alt="三月七记忆形态立绘"
+                loading="lazy"
+                decoding="async"
+              />
+              <span className="absolute bottom-3 left-7 text-[96px] font-black leading-[.85] tracking-[-.1em] opacity-20" aria-hidden="true">03</span>
+            </div>
             <h3>记忆深处的月光</h3>
             <p>当明亮的底片翻到背面，夜色显露出另一种答案。神秘、沉静，却仍与「记忆」紧紧相连。</p>
             <footer>DEVELOP THE NIGHT <span>☾</span></footer>
