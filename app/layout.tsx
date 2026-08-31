@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import "./globals.css";
+import "./forms-accordion.css";
 
 export const metadata: Metadata = {
   metadataBase: new URL("https://march7th-memories.hutao7758520.chatgpt.site"),
