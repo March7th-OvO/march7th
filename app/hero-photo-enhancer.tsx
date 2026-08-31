@@ -4,12 +4,19 @@ import { useEffect, useRef, useState } from "react";
 import { createPortal } from "react-dom";
 
 const PHOTO_SRC = "https://assets.march7th.moe/cdn-cgi/image/width=1800,quality=86,format=auto/image/backgrounds/hezhao.png";
+const MAX_ROTATE_X = 16;
+const MAX_ROTATE_Y = 22;
+
+const clamp = (value: number, min: number, max: number) => Math.min(Math.max(value, min), max);
 
 export default function HeroPhotoEnhancer() {
   const [open, setOpen] = useState(false);
   const [flipped, setFlipped] = useState(false);
   const [mounted, setMounted] = useState(false);
   const cardRef = useRef<HTMLDivElement>(null);
+  const activePointerIdRef = useRef<number | null>(null);
+  const dragStartRef = useRef({ pointerX: 0, pointerY: 0, rotateX: 0, rotateY: 0 });
+  const rotationRef = useRef({ x: 0, y: 0 });
 
   useEffect(() => {
     setMounted(true);
@@ -63,29 +70,76 @@ export default function HeroPhotoEnhancer() {
     };
   }, [open]);
 
-  const handlePointerMove = (event: React.PointerEvent<HTMLDivElement>) => {
+  const applyRotation = (rotateX: number, rotateY: number) => {
     const card = cardRef.current;
-    if (!card || window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+    if (!card) return;
 
-    const rect = card.getBoundingClientRect();
-    const x = (event.clientX - rect.left) / rect.width;
-    const y = (event.clientY - rect.top) / rect.height;
-    const rotateY = (x - 0.5) * 10;
-    const rotateX = (0.5 - y) * 8;
+    rotationRef.current = { x: rotateX, y: rotateY };
+
+    // 高光位置与强度由照片旋转角度推导，不再直接跟随鼠标位置。
+    const shineX = 50 + (rotateY / MAX_ROTATE_Y) * 30;
+    const shineY = 50 - (rotateX / MAX_ROTATE_X) * 30;
+    const tiltProgress = Math.min(
+      1,
+      Math.hypot(rotateX / MAX_ROTATE_X, rotateY / MAX_ROTATE_Y),
+    );
 
     card.style.setProperty("--photo-rx", `${rotateX}deg`);
     card.style.setProperty("--photo-ry", `${rotateY}deg`);
-    card.style.setProperty("--shine-x", `${x * 100}%`);
-    card.style.setProperty("--shine-y", `${y * 100}%`);
+    card.style.setProperty("--shine-x", `${shineX}%`);
+    card.style.setProperty("--shine-y", `${shineY}%`);
+    card.style.setProperty("--shine-opacity", `${0.35 + tiltProgress * 0.6}`);
   };
 
-  const resetTilt = () => {
+  const handlePointerDown = (event: React.PointerEvent<HTMLDivElement>) => {
+    if (
+      (event.pointerType === "mouse" && event.button !== 0)
+      || window.matchMedia("(prefers-reduced-motion: reduce)").matches
+    ) return;
+
+    activePointerIdRef.current = event.pointerId;
+    dragStartRef.current = {
+      pointerX: event.clientX,
+      pointerY: event.clientY,
+      rotateX: rotationRef.current.x,
+      rotateY: rotationRef.current.y,
+    };
+    event.currentTarget.setPointerCapture(event.pointerId);
+    event.currentTarget.classList.add("is-dragging");
+    event.preventDefault();
+  };
+
+  const handlePointerMove = (event: React.PointerEvent<HTMLDivElement>) => {
+    if (activePointerIdRef.current !== event.pointerId) return;
+
     const card = cardRef.current;
     if (!card) return;
-    card.style.setProperty("--photo-rx", "0deg");
-    card.style.setProperty("--photo-ry", "0deg");
-    card.style.setProperty("--shine-x", "50%");
-    card.style.setProperty("--shine-y", "35%");
+
+    const rect = card.getBoundingClientRect();
+    const deltaX = event.clientX - dragStartRef.current.pointerX;
+    const deltaY = event.clientY - dragStartRef.current.pointerY;
+    const rotateX = clamp(
+      dragStartRef.current.rotateX - (deltaY / rect.height) * MAX_ROTATE_X * 2,
+      -MAX_ROTATE_X,
+      MAX_ROTATE_X,
+    );
+    const rotateY = clamp(
+      dragStartRef.current.rotateY + (deltaX / rect.width) * MAX_ROTATE_Y * 2,
+      -MAX_ROTATE_Y,
+      MAX_ROTATE_Y,
+    );
+
+    applyRotation(rotateX, rotateY);
+  };
+
+  const finishDrag = (event: React.PointerEvent<HTMLDivElement>) => {
+    if (activePointerIdRef.current !== event.pointerId) return;
+
+    activePointerIdRef.current = null;
+    event.currentTarget.classList.remove("is-dragging");
+    if (event.currentTarget.hasPointerCapture(event.pointerId)) {
+      event.currentTarget.releasePointerCapture(event.pointerId);
+    }
   };
 
   if (!mounted || !open) return null;
@@ -106,8 +160,11 @@ export default function HeroPhotoEnhancer() {
         <div
           ref={cardRef}
           className={`photo-tilt-shell${flipped ? " is-flipped" : ""}`}
+          onPointerDown={handlePointerDown}
           onPointerMove={handlePointerMove}
-          onPointerLeave={resetTilt}
+          onPointerUp={finishDrag}
+          onPointerCancel={finishDrag}
+          onLostPointerCapture={finishDrag}
         >
           <div className="photo-3d-card">
             <div className="photo-face photo-front">
@@ -128,7 +185,7 @@ export default function HeroPhotoEnhancer() {
             {flipped ? "查看正面" : "翻到背面"}
             <span aria-hidden="true">↻</span>
           </button>
-          <p>移动鼠标查看塑封反光 · Esc 关闭</p>
+          <p>按住并拖动照片以旋转和查看高光 · Esc 关闭</p>
         </div>
       </div>
     </div>,

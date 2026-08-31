@@ -1,4 +1,11 @@
-@import url("https://fonts.proxy.ustclug.org/css2?family=League+Script&display=swap");
+/* 本地加载签名字体，避免 Google Fonts 或其代理不可用时回退到系统手写体。 */
+@font-face {
+  font-family: "League Script";
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url("/fonts/league-script/league-script-latin-400.woff2") format("woff2");
+}
 
 .hero-photo-trigger {
   position: relative;
@@ -87,12 +94,20 @@
   --photo-rx: 0deg;
   --photo-ry: 0deg;
   --shine-x: 50%;
-  --shine-y: 35%;
+  --shine-y: 50%;
+  --shine-opacity: .35;
   width: min(1080px, 88vw);
   aspect-ratio: 2844 / 1600;
+  cursor: grab;
+  touch-action: none;
+  user-select: none;
   transform: rotateX(var(--photo-rx)) rotateY(var(--photo-ry));
   transform-style: preserve-3d;
   transition: transform .18s ease-out;
+}
+.photo-tilt-shell.is-dragging {
+  cursor: grabbing;
+  transition: none;
 }
 .photo-3d-card {
   width: 100%;
@@ -133,7 +148,8 @@
     radial-gradient(circle at var(--shine-x) var(--shine-y), rgba(255,255,255,.5) 0, rgba(255,255,255,.18) 13%, transparent 34%),
     linear-gradient(122deg, transparent 15%, rgba(255,255,255,.18) 34%, rgba(255,255,255,.48) 43%, rgba(255,255,255,.09) 51%, transparent 66%);
   mix-blend-mode: screen;
-  opacity: .9;
+  opacity: var(--shine-opacity);
+  transition: opacity .18s ease-out;
 }
 .photo-edge-highlight {
   position: absolute;
