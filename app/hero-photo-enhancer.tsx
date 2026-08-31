@@ -1,5 +1,3 @@
-"use client";
-
 import { useEffect, useRef, useState } from "react";
 import { createPortal } from "react-dom";
 
@@ -12,15 +10,12 @@ const clamp = (value: number, min: number, max: number) => Math.min(Math.max(val
 export default function HeroPhotoEnhancer() {
   const [open, setOpen] = useState(false);
   const [flipped, setFlipped] = useState(false);
-  const [mounted, setMounted] = useState(false);
   const cardRef = useRef<HTMLDivElement>(null);
   const activePointerIdRef = useRef<number | null>(null);
   const dragStartRef = useRef({ pointerX: 0, pointerY: 0, rotateX: 0, rotateY: 0 });
   const rotationRef = useRef({ x: 0, y: 0 });
 
   useEffect(() => {
-    setMounted(true);
-
     const frame = document.querySelector<HTMLElement>(".visual-frame");
     if (!frame) return;
 
@@ -142,7 +137,7 @@ export default function HeroPhotoEnhancer() {
     }
   };
 
-  if (!mounted || !open) return null;
+  if (!open) return null;
 
   return createPortal(
     <div
