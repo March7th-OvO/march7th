@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import "./globals.css";
 import "./forms-accordion.css";
+import FormsScrollFade from "./forms-scroll-fade";
 
 export const metadata: Metadata = {
   metadataBase: new URL("https://march7th-memories.hutao7758520.chatgpt.site"),
@@ -34,7 +35,10 @@ export const metadata: Metadata = {
 export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
   return (
     <html lang="zh-CN">
-      <body>{children}</body>
+      <body>
+        {children}
+        <FormsScrollFade />
+      </body>
     </html>
   );
 }
