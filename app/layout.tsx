@@ -1,7 +1,9 @@
 import type { Metadata } from "next";
 import "./globals.css";
 import "./forms-accordion.css";
+import "./hero-photo.css";
 import FormsScrollFade from "./forms-scroll-fade";
+import HeroPhotoEnhancer from "./hero-photo-enhancer";
 
 export const metadata: Metadata = {
   metadataBase: new URL("https://march7th-memories.hutao7758520.chatgpt.site"),
@@ -38,6 +40,7 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
       <body>
         {children}
         <FormsScrollFade />
+        <HeroPhotoEnhancer />
       </body>
     </html>
   );
