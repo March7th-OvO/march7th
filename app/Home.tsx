@@ -8,6 +8,100 @@ const imageUrl = (path: string, width: number, quality = 78) =>
 const imageSrcSet = (path: string, widths: number[], quality = 78) =>
   widths.map((width) => `${imageUrl(path, width, quality)} ${width}w`).join(", ");
 
+type TypedQuoteOptions = {
+  typeSpeed: number;
+  backSpeed: number;
+  backDelay: number;
+  startDelay: number;
+  smartBackspace: boolean;
+  loop: boolean;
+  cursorChar: string;
+};
+
+const parseProperties = (source: string) => {
+  const properties = new Map<string, string>();
+
+  source.split(/\r?\n/).forEach((rawLine) => {
+    const line = rawLine.trim();
+    if (!line || line.startsWith("#")) return;
+
+    const separatorIndex = line.indexOf("=");
+    if (separatorIndex <= 0) return;
+
+    const key = line.slice(0, separatorIndex).trim();
+    const value = line.slice(separatorIndex + 1).trim();
+    if (key && value) properties.set(key, value);
+  });
+
+  return properties;
+};
+
+const requireProperty = (properties: Map<string, string>, key: string) => {
+  const value = properties.get(key);
+  if (!value) throw new Error(`语录配置缺少必填项：${key}`);
+  return value;
+};
+
+const parseNonNegativeInteger = (properties: Map<string, string>, key: string) => {
+  const value = requireProperty(properties, key);
+  const parsed = Number(value);
+
+  if (!Number.isSafeInteger(parsed) || parsed < 0) {
+    throw new Error(`语录配置 ${key} 必须是非负整数，当前值为：${value}`);
+  }
+
+  return parsed;
+};
+
+const parseBoolean = (properties: Map<string, string>, key: string) => {
+  const value = requireProperty(properties, key);
+  if (value === "true") return true;
+  if (value === "false") return false;
+  throw new Error(`语录配置 ${key} 必须是 true 或 false，当前值为：${value}`);
+};
+
+const parseTypedQuoteConfig = (source: string) => {
+  const properties = parseProperties(source);
+  const entries: Array<{ order: number; text: string }> = [];
+
+  properties.forEach((text, key) => {
+    const match = /^quote\.(\d+)$/.exec(key);
+    if (!match) return;
+
+    const order = Number(match[1]);
+    if (Number.isSafeInteger(order) && text) entries.push({ order, text });
+  });
+
+  const quotes = entries
+    .sort((left, right) => left.order - right.order)
+    .map(({ text }) => text);
+
+  if (quotes.length === 0) throw new Error("语录配置中没有有效的 quote.<序号> 条目");
+
+  const options: TypedQuoteOptions = {
+    typeSpeed: parseNonNegativeInteger(properties, "typed.typeSpeed"),
+    backSpeed: parseNonNegativeInteger(properties, "typed.backSpeed"),
+    backDelay: parseNonNegativeInteger(properties, "typed.backDelay"),
+    startDelay: parseNonNegativeInteger(properties, "typed.startDelay"),
+    smartBackspace: parseBoolean(properties, "typed.smartBackspace"),
+    loop: parseBoolean(properties, "typed.loop"),
+    cursorChar: requireProperty(properties, "typed.cursorChar"),
+  };
+
+  return { quotes, options };
+};
+
+const loadTypedQuoteConfig = async (signal: AbortSignal) => {
+  const configUrl = `${import.meta.env.BASE_URL}config/quotes.properties`;
+  const response = await fetch(configUrl, { signal });
+
+  if (!response.ok) {
+    throw new Error(`语录配置读取失败：${response.status} ${response.statusText}`);
+  }
+
+  return parseTypedQuoteConfig(await response.text());
+};
+
 const journeyStages = [
   {
     place: "六相冰",
@@ -71,11 +165,54 @@ export default function Home() {
   const [activeProfileCard, setActiveProfileCard] = useState(0);
   const [menuOpen, setMenuOpen] = useState(false);
   const journeyRef = useRef<HTMLElement>(null);
+  const typedQuoteRef = useRef<HTMLSpanElement>(null);
 
   useEffect(() => {
     const close = () => setMenuOpen(false);
     window.addEventListener("resize", close);
     return () => window.removeEventListener("resize", close);
+  }, []);
+
+  useEffect(() => {
+    const target = typedQuoteRef.current;
+    if (!target) return;
+
+    let disposed = false;
+    let typedInstance: { destroy: () => void } | undefined;
+    const controller = new AbortController();
+
+    const initTypedQuote = async () => {
+      try {
+        const typedQuoteConfig = await loadTypedQuoteConfig(controller.signal);
+        if (disposed || !typedQuoteRef.current) return;
+
+        // 尊重系统的减少动态效果设置，保留配置中的首句作为静态展示。
+        if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
+          typedQuoteRef.current.textContent = typedQuoteConfig.quotes[0];
+          return;
+        }
+
+        const { default: Typed } = await import("typed.js");
+        if (disposed || !typedQuoteRef.current) return;
+
+        typedInstance = new Typed(typedQuoteRef.current, {
+          strings: typedQuoteConfig.quotes,
+          ...typedQuoteConfig.options,
+        });
+      } catch (error) {
+        if (disposed) return;
+        console.error(error);
+        if (typedQuoteRef.current) typedQuoteRef.current.textContent = "语录暂时读取失败。";
+      }
+    };
+
+    void initTypedQuote();
+
+    return () => {
+      disposed = true;
+      controller.abort();
+      typedInstance?.destroy();
+    };
   }, []);
 
   useEffect(() => {
@@ -228,6 +365,15 @@ export default function Home() {
       </section>
 
       <section className="profile-section" id="profile">
+        <p
+          className="profile-quote"
+          aria-label="三月七的八条角色语录正在循环播放"
+        >
+          <span aria-hidden="true">“</span>
+          <span className="typed-quote-text" ref={typedQuoteRef} aria-hidden="true" />
+          <span aria-hidden="true">”</span>
+        </p>
+
         <div className="section-heading">
           <p className="eyebrow">CHARACTER FILE / 角色档案</p>
           <h2>遗失过去的人，<br /><span>最认真地收藏现在。</span></h2>
