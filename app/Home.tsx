@@ -172,6 +172,7 @@ export default function Home() {
           <a href="#profile" onClick={() => setMenuOpen(false)}>角色档案</a>
           <a href="#memories" onClick={() => setMenuOpen(false)}>旅途时间轴</a>
           <a href="#forms" onClick={() => setMenuOpen(false)}>旅途剪影</a>
+          <a href="/photo-wall" onClick={() => setMenuOpen(false)}>时光回廊</a>
         </nav>
       </header>
 
