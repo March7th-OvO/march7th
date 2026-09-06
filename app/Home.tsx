@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from "react";
+import HorizontalScenePage from "./components/horizontal-scene/HorizontalScenePage";
 
 const assetHost = "https://assets.march7th.moe";
 
@@ -102,69 +103,9 @@ const loadTypedQuoteConfig = async (signal: AbortSignal) => {
   return parseTypedQuoteConfig(await response.text());
 };
 
-const journeyStages = [
-  {
-    place: "六相冰",
-    title: "被列车捡到的那一天",
-    text: "星穹列车在寂静宇宙中发现了一块漂流的六相冰。冰里的少女忘记了姓名与来处，于是把重获新生的日期，写成了自己的名字。",
-    memory: "三月七。先记住今天，昨天以后再说。",
-    symbol: "冰",
-    tone: "ice",
-  },
-  {
-    place: "黑塔空间站",
-    title: "第一次成为你的向导",
-    text: "反物质军团突袭空间站，她和丹恒在混乱中找到了刚刚醒来的开拓者。这里既是故事的序章，也是列车新同伴第一次并肩作战的地方。",
-    memory: "站稳啦，接下来就跟紧本姑娘。",
-    symbol: "序",
-    tone: "station",
-  },
-  {
-    place: "贝洛伯格",
-    title: "把风雪留在相片里",
-    text: "在被永冬包围的雅利洛-VI，三月七与同伴穿过上下层区，见证贝洛伯格重新选择未来。雪原很冷，但这趟开拓之旅第一次有了家的温度。",
-    memory: "这么大的雪，当然要多拍几张。",
-    symbol: "雪",
-    tone: "belobog",
-  },
-  {
-    place: "仙舟「罗浮」",
-    title: "云海之外，也有旧梦",
-    text: "列车因一封讯息驶向仙舟，在星核危机与幻胧之乱中和罗浮并肩。后来，她又在这里追索自己的记忆、拜师习剑，把未知练成了新的招式。",
-    memory: "过去没想起来，剑倒是学会了。",
-    symbol: "剑",
-    tone: "luofu",
-  },
-  {
-    place: "匹诺康尼",
-    title: "美梦也要按下快门",
-    text: "盛会之星的邀请，把列车带进层层梦境。三月七与伙伴追随钟表匠留下的路，在真假交叠的美梦中，见证匹诺康尼重新听见自由的声音。",
-    memory: "美梦终会醒，但照片里的大家不会消失。",
-    symbol: "梦",
-    tone: "penacony",
-  },
-  {
-    place: "翁法洛斯",
-    title: "记忆终于追上了她",
-    text: "列车抵达永恒之地门外，三月七却因突如其来的异变暂别同行者。六相冰、长夜与被封存的往事在这里重新相遇，她的故事翻到了最接近答案的一页。",
-    memory: "无论记起什么，我都还是我。",
-    symbol: "夜",
-    tone: "amphoreus",
-  },
-  {
-    place: "下一站",
-    title: "三月七的旅途还在继续~",
-    text: "相机里还有空白，星轨前方也还有无数没有抵达的世界。答案不必在今天全部找到——只要列车继续前进，新的回忆就会不断显影。",
-    memory: "准备好了吗？这次也要一起拍。",
-    symbol: "∞",
-    tone: "future",
-  },
-];
-
 export default function Home() {
   const [activeProfileCard, setActiveProfileCard] = useState(0);
   const [menuOpen, setMenuOpen] = useState(false);
-  const journeyRef = useRef<HTMLElement>(null);
   const typedQuoteRef = useRef<HTMLSpanElement>(null);
 
   useEffect(() => {
@@ -213,79 +154,6 @@ export default function Home() {
       controller.abort();
       typedInstance?.destroy();
     };
-  }, []);
-
-  useEffect(() => {
-    let cleanup: (() => void) | undefined;
-
-    const initGsap = async () => {
-      if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
-
-      const { gsap } = await import("gsap");
-      const { ScrollTrigger } = await import("gsap/ScrollTrigger");
-
-      gsap.registerPlugin(ScrollTrigger);
-
-      const root = journeyRef.current;
-      if (!root) return;
-
-      const scrollWindow = root.querySelector<HTMLElement>(".journey-window");
-      const scrollTrack = root.querySelector<HTMLElement>(".journey-scroll-track");
-      const panels = gsap.utils.toArray<HTMLElement>(".journey-panel", root);
-      const routeStops = gsap.utils.toArray<HTMLElement>(".journey-route-stop", root);
-      const progressFill = root.querySelector<HTMLElement>(".journey-progress-fill");
-
-      if (!scrollWindow || !scrollTrack || panels.length < 2 || !progressFill) return;
-
-      const ctx = gsap.context(() => {
-        gsap.set(panels.slice(1), { yPercent: 108, scale: 0.86, opacity: 0.18 });
-        gsap.set(routeStops.slice(1), { opacity: 0.28 });
-        gsap.set(progressFill, { scaleY: 0, transformOrigin: "top center" });
-
-        const timeline = gsap.timeline({
-          defaults: { ease: "none" },
-          scrollTrigger: {
-            trigger: scrollTrack,
-            scroller: scrollWindow,
-            start: "top top",
-            end: "bottom bottom",
-            scrub: 0.85,
-            invalidateOnRefresh: true,
-          },
-        });
-
-        // 每次滚动推进一格：旧底片向上缩暗，新底片从窗口底部完成显影。
-        panels.slice(1).forEach((panel, panelIndex) => {
-          const previousPanel = panels[panelIndex];
-          const routeStop = routeStops[panelIndex + 1];
-          const at = panelIndex;
-
-          timeline
-            .to(previousPanel, {
-              yPercent: -14,
-              scale: 0.88,
-              opacity: 0.12,
-              filter: "blur(10px)",
-              duration: 0.48,
-            }, at)
-            .to(panel, {
-              yPercent: 0,
-              scale: 1,
-              opacity: 1,
-              duration: 0.72,
-            }, at)
-            .to(routeStop, { opacity: 1, duration: 0.18 }, at + 0.46);
-        });
-
-        timeline.to(progressFill, { scaleY: 1, duration: panels.length - 1 }, 0);
-      }, root);
-
-      cleanup = () => ctx.revert();
-    };
-
-    void initGsap();
-
-    return () => cleanup?.();
   }, []);
 
   return (
@@ -434,78 +302,7 @@ export default function Home() {
         </div>
       </section>
 
-      <section className="journey-section" id="memories" ref={journeyRef}>
-        <div className="journey-pin">
-          <div className="journey-heading">
-            <p>一扇窗口，装下整段星轨</p>
-            <span>MEMORY ARCHIVE / 旅途时间轴</span>
-          </div>
-
-          <div className="journey-route" aria-hidden="true">
-            <div className="journey-progress-track">
-              <i className="journey-progress-fill" />
-            </div>
-            {journeyStages.map((stage) => (
-              <div className="journey-route-stop" key={stage.place}>
-                <i />
-                <span>{stage.place}</span>
-              </div>
-            ))}
-          </div>
-
-          <div className="journey-window-shell">
-            <div className="journey-window-bar" aria-hidden="true">
-              <span className="journey-window-dots"><i /><i /><i /></span>
-              <strong>M7_MEMORY_VIEWER</strong>
-              <span>把光标移入窗口后滚动</span>
-            </div>
-            <div
-              className="journey-window"
-              tabIndex={0}
-              aria-label="三月七的旅途时间轴，可在窗口内滚动浏览"
-              aria-describedby="journey-window-help"
-            >
-              <div
-                className="journey-scroll-track"
-                style={{ height: `${journeyStages.length * 100}%` }}
-              >
-                <div
-                  className="journey-window-viewport"
-                  style={{ height: `${100 / journeyStages.length}%` }}
-                >
-                  {journeyStages.map((stage, index) => (
-                    <article
-                      className="journey-panel"
-                      data-tone={stage.tone}
-                      key={stage.place}
-                      style={{ zIndex: index + 1 }}
-                    >
-                      <div className="journey-panel-copy">
-                        <div className="journey-place">
-                          <span>{String(index + 1).padStart(2, "0")}</span>
-                          <p>{stage.place}</p>
-                        </div>
-                        <h2>{stage.title}</h2>
-                        <p className="journey-description">{stage.text}</p>
-                        <blockquote>{stage.memory}</blockquote>
-                      </div>
-                      <div className="journey-visual" aria-hidden="true">
-                        <div className="journey-orbit orbit-outer" />
-                        <div className="journey-orbit orbit-inner" />
-                        <span>{stage.symbol}</span>
-                        <p>MARCH 7TH<br />MEMORY ARCHIVE</p>
-                      </div>
-                    </article>
-                  ))}
-                </div>
-              </div>
-            </div>
-            <p className="journey-instruction" id="journey-window-help">
-              窗口内滚动浏览，页面不会被时间轴占满 <span>↓</span>
-            </p>
-          </div>
-        </div>
-      </section>
+      <HorizontalScenePage />
 
       <section className="forms-section" id="forms">
         <div className="section-heading compact">
