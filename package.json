@@ -10,7 +10,7 @@
     "dev": "vite",
     "build": "vite build && node scripts/prerender.mjs",
     "start": "vite preview",
-    "test": "npm run build && node --test tests/rendered-html.test.mjs",
+    "test": "npm run build && node --test tests/*.test.mjs",
     "lint": "eslint .",
     "typecheck": "tsc --noEmit",
     "db:generate": "drizzle-kit generate"
