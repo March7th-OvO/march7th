@@ -32,21 +32,22 @@ npm start          # 本地预览生产构建
 
 部署细节见 [CLOUDFLARE_WORKERS.md](./CLOUDFLARE_WORKERS.md)。
 
-## 横向旅途场景
+## 横向 Scrollytelling 原型
 
-首页 `#memories` 使用 `app/components/horizontal-scene/HorizontalScenePage.tsx`。
-纵向页面滚动通过 GSAP ScrollTrigger 固定场景，并按世界宽度减视口宽度驱动横移。
-远景、中景、章节和前景独立移动；章节导航可直接跳转，末尾自动回到正常页面滚动。
+首页 `#memories` 已替换为 DOM + CSS + SVG 占位原型。ScrollTrigger 固定 Stage，
+一条 0–23.38 时间轴驱动 11200px 连续世界的七个视差图层与全部转场。
+向上滚动可逆向还原，结束后恢复普通页面滚动。
 
-内容和视觉调优统一修改 `public/config/journey.properties`：
+调整内容和参数统一编辑 `public/config/scrollytelling.properties`：
 
-- `stage.<序号>.*`：沿用原站全部七个章节，`position` 控制章节间距。
-- `scene.*`：标题、提示、配色、装饰数量与角色横向位置。
-- `motion.*`：视差倍率、节点显影、漂浮与步行节奏。
+- `layout.worldWidth` 与 `layout.referenceWidth` 的差值为世界移动距离。
+- `layout.scrollDistance` 是完整滚动长度，默认 9800 CSS px。
+- `timeline.*` 控制 milestone；`motion.*` 控制局部动效。
+- `parallax.*` 控制图层倍率；`slot.<id>.*` 控制素材名字、坐标和尺寸。
+- `station.<id>.*` 控制节点类型、文案和位置；`color.*` 控制主要配色。
+- `debug.enabled` 默认 false；开发环境自动显示 Debug HUD。
 
-文件注释注明取值范围；配置解析器会报告缺失或非法键。构建时导入同一份文件进行
-预渲染，浏览器再读取公开配置以支持内容更新。读取或解析失败时保留构建快照。
-减少动态模式、低高度视口（600px 及以下）、极窄视口（小于 360px）及动画加载失败时，
-页面以普通章节列表展示全部内容。组件卸载、断点切换时清理动画、定时器与监听。
+配置使用同一份构建快照进行预渲染，再在浏览器中重新读取。非法配置会显示包含键名的错误，
+停止并清理当前动画。系统减少动态效果模式下，内容以普通文档流展示。
 
-`npm test` 包含预渲染回归、配置构建复制一致性及异常值校验。
+组件职责、素材替换方式、验证命令与简化范围见 [Scrollytelling 技术说明](./docs/SCROLLYTELLING.md)。

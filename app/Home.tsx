@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from "react";
-import HorizontalScenePage from "./components/horizontal-scene/HorizontalScenePage";
+import ScrollytellingPage from "./components/scrollytelling/ScrollytellingPage";
 
 const assetHost = "https://assets.march7th.moe";
 
@@ -302,7 +302,7 @@ export default function Home() {
         </div>
       </section>
 
-      <HorizontalScenePage />
+      <ScrollytellingPage />
 
       <section className="forms-section" id="forms">
         <div className="section-heading compact">

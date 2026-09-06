@@ -1,0 +1,112 @@
+/* 统一层级；World 不创建 stacking context，Walker 可插在 Rail 与 Foreground 之间。 */
+.scrollytelling {
+  --z-far: 0; --z-background: 10; --z-typography: 20; --z-hero: 30;
+  --z-rail: 40; --z-walker: 50; --z-foreground: 60; --z-extreme: 65;
+  --z-ambient: 70; --z-transitions: 80; --z-hud: 100;
+  position: relative; min-height: 100svh; color: white; background: #050a17; isolation: isolate;
+}
+.scrollytelling * { box-sizing: border-box; }
+.scrolly-stage { position: relative; width: 100%; height: 100svh; overflow: hidden; background: var(--scrolly-bg); }
+.scrolly-design-surface {
+  position: absolute; top: 50%; left: 50%; width: var(--reference-width); height: var(--reference-height);
+  overflow: hidden; background: var(--scrolly-far);
+  transform: translate(-50%, -50%) scale(var(--stage-scale, 1)); transform-origin: center;
+}
+.scrolly-world, .scrolly-layer { position: absolute; inset: 0 auto 0 0; height: var(--reference-height); }
+.scrolly-world { width: var(--world-width); }
+.scrolly-layer { pointer-events: none; }
+.scrollytelling[data-enhanced] .scrolly-layer { will-change: transform; }
+.scrolly-layer-far { z-index: var(--z-far); background: var(--scrolly-far); }
+.scrolly-layer-background { z-index: var(--z-background); }
+.scrolly-layer-typography { z-index: var(--z-typography); }
+.scrolly-layer-hero { z-index: var(--z-hero); }
+.scrolly-layer-rail { z-index: var(--z-rail); }
+.scrolly-layer-foreground { z-index: var(--z-foreground); }
+.scrolly-layer-extreme { z-index: var(--z-extreme); }
+
+.scrolly-grid { position: absolute; inset: 0; opacity: .25; background-image: linear-gradient(#6e9ac026 1px, transparent 1px), linear-gradient(90deg, #6e9ac026 1px, transparent 1px); background-size: 64px 64px; }
+.scrolly-slot { position: absolute; }
+.scrolly-slot-motion { position: relative; width: 100%; height: 100%; }
+.scrolly-slot-motion > img, .scrolly-slot-motion > picture, .scrolly-slot-motion > picture > img { display: block; width: 100%; height: 100%; object-fit: contain; }
+.scrolly-asset-placeholder { width: var(--asset-width); height: var(--asset-height); display: grid; place-content: center; gap: 10px; border: 1px solid #d9f6ffb8; background: #1a579e73; color: #fff; text-align: center; box-shadow: inset 0 0 0 8px #0713295c; }
+.scrolly-asset-placeholder span { font: 700 16px/1.1 monospace; letter-spacing: .12em; }
+.scrolly-asset-placeholder small { color: #bcefff; font: 11px/1 monospace; letter-spacing: .12em; }
+.scrolly-layer-far .scrolly-slot { opacity: .32; }
+.scrolly-layer-background .scrolly-slot { opacity: .5; }
+.scrolly-layer-hero .scrolly-asset-placeholder { background: var(--scrolly-hero); }
+.portrait-card { transform-origin: top center; visibility: hidden; }
+.panorama-motion, .halo-motion, .will-motion { visibility: hidden; }
+.halo-hero .scrolly-asset-placeholder { border-radius: 50%; }
+.memory-reveal { clip-path: circle(0% at 50% 50%); }
+
+.scrollytelling .hero-title { margin: 0; font: 900 118px/.82 Impact, "Arial Narrow", sans-serif; letter-spacing: -.045em; text-transform: uppercase; }
+.scrollytelling .decorative-title { margin: 0; font: italic 400 96px/1 Georgia, serif; }
+.scrollytelling .micro-label { margin: 0; font: 700 11px/1.2 monospace; letter-spacing: .2em; }
+.scrollytelling .outline-title { position: absolute; top: 7px; left: 9px; color: transparent; -webkit-text-stroke: 2px var(--scrolly-cyan); opacity: .72; }
+.title-laterano { color: var(--scrolly-cyan); }
+.scrolly-rail-line { position: absolute; left: 0; top: var(--rail-y); width: 100%; height: 2px; background: white; }
+.scrolly-station { position: absolute; top: calc(var(--rail-y) - 18px); min-width: 150px; height: 36px; display: grid; grid-template-columns: 24px auto; grid-template-rows: 1fr 1fr; align-items: center; column-gap: 7px; padding: 4px 10px 4px 7px; color: #071329; background: white; box-shadow: 5px 6px 0 #0310276e; }
+.scrolly-station-hex { grid-row: 1 / 3; width: 22px; height: 22px; background: var(--scrolly-cyan); clip-path: polygon(25% 7%, 75% 7%, 100% 50%, 75% 93%, 25% 93%, 0 50%); }
+.scrolly-station-id { font: 800 10px/1 monospace; letter-spacing: .06em; }
+.scrolly-station strong { font: 800 8px/1 monospace; letter-spacing: .08em; }
+
+.scrolly-layer-foreground .scrolly-asset-placeholder { background: #dff7ff2b; }
+.foreground-object { transform: rotate(-6deg); }
+.foreground-disc-a .scrolly-asset-placeholder, .foreground-disc-b .scrolly-asset-placeholder { border: 35px solid #e9faff57; border-radius: 50%; }
+.extreme-bar-a { transform: rotate(-18deg); }
+.extreme-bar-b { transform: rotate(15deg); }
+.scrolly-layer-extreme .scrolly-asset-placeholder { color: #071329; background: #eefbffe3; }
+.scrolly-layer-extreme .scrolly-asset-placeholder span { font-size: 11px; }
+.scrolly-layer-extreme .scrolly-asset-placeholder small { color: #071329; }
+
+/* Walker 只预留 walking/idle 状态；没有独立循环或自动播放。脚底位于 84% 高度。 */
+.scrolly-walker { position: absolute; z-index: var(--z-walker); left: var(--walker-x); top: calc(var(--walker-y) - 93px); width: 56px; height: 100px; color: #fff; }
+.walker-head, .walker-body, .walker-leg { position: absolute; display: block; background: currentColor; }
+.walker-head { left: 18px; top: 0; width: 24px; height: 24px; border-radius: 50%; }
+.walker-body { left: 13px; top: 26px; width: 34px; height: 42px; }
+.walker-leg { top: 64px; width: 10px; height: 29px; }
+.walker-leg-left { left: 16px; } .walker-leg-right { left: 34px; }
+.scrolly-walker small { position: absolute; top: 96px; left: 4px; font: 8px/1 monospace; letter-spacing: .1em; }
+.scrolly-transition-layer { position: absolute; inset: 0; z-index: var(--z-transitions); pointer-events: none; }
+.scrolly-transition-surface, .scrolly-hud-surface {
+  position: absolute; left: 50%; top: 50%; width: var(--reference-width); height: var(--reference-height);
+  transform: translate(-50%, -50%) scale(var(--transition-scale, 1)); transform-origin: center;
+}
+.scrolly-hud-surface { z-index: var(--z-hud); transform: translate(-50%, -50%) scale(var(--stage-scale, 1)); pointer-events: none; }
+.scrolly-transition { position: absolute; inset: 0; width: 100%; height: 100%; overflow: hidden; }
+.cyan-surface { position: absolute; border-radius: 50%; background: var(--scrolly-transition-cyan); }
+/* 未初始化时也不输出亮色覆盖；透明度包络完全由 master timeline 控制。 */
+.green-iris, .cyan-transition, .cyan-flash { opacity: 0; }
+.scrollytelling:not([data-enhanced]) .scrolly-transition-layer { display: none; }
+.scrolly-ambient-placeholder { position: absolute; z-index: var(--z-ambient); right: var(--safe-area); top: 50%; opacity: .45; writing-mode: vertical-rl; font: 8px/1 monospace; letter-spacing: .17em; pointer-events: none; }
+.scrolly-hud { position: absolute; inset: 0; z-index: var(--z-hud); pointer-events: none; }
+.scrolly-hud-nav { position: absolute; top: var(--safe-area); left: var(--safe-area); display: flex; background: #000c; }
+.scrolly-hud-nav span { padding: 10px 14px; color: white; border-right: 1px solid #ffffff45; font: 800 10px/1 monospace; letter-spacing: .12em; }
+.scrolly-hud-shop { position: absolute; left: var(--safe-area); bottom: var(--safe-area); display: flex; flex-direction: column; gap: 4px; padding: 12px 15px; background: #000c; }
+.scrolly-hud-shop strong { font: 800 12px/1 monospace; letter-spacing: .1em; }
+.scrolly-hud-shop span { color: #9cdcf2; font: 8px/1 monospace; letter-spacing: .12em; }
+.scrolly-debug { position: absolute; right: var(--safe-area); bottom: var(--safe-area); display: grid; gap: 5px; min-width: 238px; padding: 11px 13px; color: #aeeaff; background: #000d; font: 9px/1.2 monospace; letter-spacing: .08em; }
+.scrolly-debug span { display: flex; justify-content: space-between; gap: 16px; }
+.scrolly-debug b { color: white; font-weight: 700; }
+.scrolly-error { padding: 40px; color: white; }
+.scrollytelling[data-config-error="true"] .scrolly-stage { display: none; }
+
+/* 减少动态效果：完整内容按正常文档流展示，不留下空 pin 区域。 */
+@media (prefers-reduced-motion: reduce) {
+  .scrolly-stage { height: auto; overflow: hidden; padding: 24px; }
+  .scrolly-design-surface { position: relative; inset: auto; width: 100%; height: auto; transform: none; overflow: visible; }
+  .scrolly-world, .scrolly-layer { position: relative; inset: auto; width: 100% !important; height: auto; }
+  .scrolly-layer-far, .scrolly-layer-background, .scrolly-layer-foreground, .scrolly-layer-extreme,
+  .scrolly-walker, .scrolly-transition-layer, .scrolly-ambient-placeholder, .scrolly-hud, .outline-title { display: none; }
+  .scrolly-layer-hero, .scrolly-layer-typography { display: flex; flex-wrap: wrap; gap: 24px; }
+  .scrolly-layer-hero [data-scene] { display: contents; }
+  .scrolly-slot { position: relative; left: auto !important; top: auto !important; width: min(100%, 430px) !important; height: auto !important; margin-bottom: 24px; }
+  /* 切换偏好时覆盖 GSAP 还原的内联初始帧，确保所有占位内容仍可阅读。 */
+  .scrolly-slot-motion { visibility: visible !important; opacity: 1 !important; transform: none !important; clip-path: none !important; }
+  .scrolly-asset-placeholder { max-width: 100%; height: 280px; }
+  .scrollytelling .hero-title { font-size: clamp(36px, 7vw, 80px); }
+  .scrollytelling .decorative-title { font-size: 48px; }
+  .scrolly-rail-line { display: none; }
+  .scrolly-layer-rail [aria-label] { display: flex; flex-wrap: wrap; gap: 16px; }
+  .scrolly-station { position: relative; left: auto !important; top: auto; }
+}
