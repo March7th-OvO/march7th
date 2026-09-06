@@ -91,6 +91,16 @@
 .scrolly-error { padding: 40px; color: white; }
 .scrollytelling[data-config-error="true"] .scrolly-stage { display: none; }
 
+/* 竖屏使用方形取景窗口：保留横向叙事与左侧角色，同时避免 1280×576 被 contain 成一条窄横带。 */
+@media (orientation: portrait) {
+  .scrolly-design-surface, .scrolly-hud-surface {
+    left: 0;
+    transform: translateY(-50%) scale(var(--stage-scale, 1));
+    transform-origin: left center;
+  }
+  .scrolly-ambient-placeholder { display: none; }
+}
+
 /* 减少动态效果：完整内容按正常文档流展示，不留下空 pin 区域。 */
 @media (prefers-reduced-motion: reduce) {
   .scrolly-stage { height: auto; overflow: hidden; padding: 24px; }
