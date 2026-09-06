@@ -25,7 +25,8 @@ export function useScrollytelling(refs: ScrollyRefs, config: ScrollyConfig, enab
     let disposed = false;
     let refreshFrame = 0;
     const updateScale = () => {
-      const scale = Math.min(stage.clientWidth / layout.referenceWidth, stage.clientHeight / layout.referenceHeight);
+      const containScale = Math.min(stage.clientWidth / layout.referenceWidth, stage.clientHeight / layout.referenceHeight);
+      const scale = stage.clientHeight > stage.clientWidth ? stage.clientWidth / layout.referenceHeight : containScale;
       stage.style.setProperty("--stage-scale", String(scale));
       stage.style.setProperty("--transition-scale", String(Math.max(stage.clientWidth / layout.referenceWidth, stage.clientHeight / layout.referenceHeight)));
     };
