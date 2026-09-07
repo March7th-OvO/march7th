@@ -142,10 +142,13 @@ try {
     assert.equal((await info()).count, 1);
     assert.equal((await info()).spacers, 1);
     const dimensions = await page.locator(".scrolly-design-surface").boundingBox();
-    const scale = height > width ? width / 576 : Math.min(width / 1280, height / 576);
+    const scale = height > width ? height / 576 : Math.min(width / 1280, height / 576);
     assert.ok(Math.abs(dimensions.width - 1280 * scale) < 1);
     assert.ok(Math.abs(dimensions.height - 576 * scale) < 1);
-    if (height > width) assert.ok(Math.abs(dimensions.x) < 1, "竖屏设计面从左侧取景，保留 Walker 和路线起点");
+    if (height > width) {
+      assert.ok(Math.abs(dimensions.x) < 1, "竖屏设计面从左侧取景，保留 Walker 和路线起点");
+      assert.ok(Math.abs(dimensions.height - height) < 1, "竖屏设计面必须填满 viewport 高度");
+    }
     const overlay = await page.locator(".scrolly-transition-surface").boundingBox();
     assert.ok(overlay.width >= width - 1 && overlay.height >= height - 1, "转场覆盖完整视口");
     assert.ok(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth));
