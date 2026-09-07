@@ -29,7 +29,7 @@ export default function Stage({ stageRef, designRef, ...debugRefs }: StageProps)
     <div className="scrolly-design-surface" ref={designRef}>
       <World />
       <Walker />
-      <div className="scrolly-ambient-placeholder" aria-hidden="true">AMBIENT PLACEHOLDER</div>
+      <div className="scrolly-ambient-placeholder" aria-hidden="true">氛围元素占位</div>
     </div>
     {/* World contain 保持构图；Transition cover 覆盖整个 viewport，HUD 位于两者上方。 */}
     <div className="scrolly-transition-layer"><div className="scrolly-transition-surface">

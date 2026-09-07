@@ -35,7 +35,7 @@
 .scrolly-layer-background .scrolly-slot { opacity: .5; }
 .scrolly-layer-hero .scrolly-asset-placeholder { background: var(--scrolly-hero); }
 .portrait-card { transform-origin: top center; visibility: hidden; }
-.panorama-motion, .halo-motion, .will-motion { visibility: hidden; }
+.panorama-motion, .halo-motion, .chapter-title-motion { visibility: hidden; }
 .halo-hero .scrolly-asset-placeholder { border-radius: 50%; }
 .memory-reveal { clip-path: circle(0% at 50% 50%); }
 
@@ -43,7 +43,7 @@
 .scrollytelling .decorative-title { margin: 0; font: italic 400 96px/1 Georgia, serif; }
 .scrollytelling .micro-label { margin: 0; font: 700 11px/1.2 monospace; letter-spacing: .2em; }
 .scrollytelling .outline-title { position: absolute; top: 7px; left: 9px; color: transparent; -webkit-text-stroke: 2px var(--scrolly-cyan); opacity: .72; }
-.title-laterano { color: var(--scrolly-cyan); }
+.scrollytelling .chapter-title { margin: 0; color: #bcefff3d; font: 900 104px/.9 Impact, "Arial Narrow", sans-serif; letter-spacing: -.035em; white-space: nowrap; }
 .scrolly-rail-line { position: absolute; left: 0; top: var(--rail-y); width: 100%; height: 2px; background: white; }
 .scrolly-station { position: absolute; top: calc(var(--rail-y) - 18px); min-width: 150px; height: 36px; display: grid; grid-template-columns: 24px auto; grid-template-rows: 1fr 1fr; align-items: center; column-gap: 7px; padding: 4px 10px 4px 7px; color: #071329; background: white; box-shadow: 5px 6px 0 #0310276e; }
 .scrolly-station-hex { grid-row: 1 / 3; width: 22px; height: 22px; background: var(--scrolly-cyan); clip-path: polygon(25% 7%, 75% 7%, 100% 50%, 75% 93%, 25% 93%, 0 50%); }

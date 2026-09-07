@@ -19,6 +19,23 @@ export function parseScrollyConfig(source: string) {
     if (!value) throw new Error(`Scrollytelling 配置缺少必填项：${key}`);
     return value;
   };
+  const assetSource = (key: string) => {
+    const value = values.get(key);
+    if (value === undefined) throw new Error(`Scrollytelling 配置缺少必填项：${key}`);
+    const hasControlCharacter = [...value].some(character => character.charCodeAt(0) < 32);
+    if (/^(?:\/\/|data:|javascript:)/i.test(value) || value.includes("\\") || hasControlCharacter)
+      throw new Error(`Scrollytelling 配置 ${key} 必须为空、相对路径、站内绝对路径或完整 HTTP(S) URL`);
+    if (/^[a-z][a-z\d+.-]*:/i.test(value) && !/^https?:\/\//i.test(value))
+      throw new Error(`Scrollytelling 配置 ${key} 仅支持 HTTP(S) 完整 URL`);
+    if (/^https?:\/\//i.test(value)) {
+      try {
+        if (!new URL(value).hostname) throw new Error("missing hostname");
+      } catch {
+        throw new Error(`Scrollytelling 配置 ${key} 必须是有效的 HTTP(S) URL`);
+      }
+    }
+    return value;
+  };
   const number = (key: string, min: number, max: number) => {
     const value = Number(text(key));
     if (!Number.isFinite(value) || value < min || value > max)
@@ -65,8 +82,11 @@ export function parseScrollyConfig(source: string) {
     flashStrokeRatio: number("motion.flashStrokeRatio", 0.01, 0.1),
     cardScaleY: number("motion.cardScaleY", 0, 1), cardY: number("motion.cardY", -500, 500),
     cardStagger: number("motion.cardStagger", 0.01, 2),
+    chapterTitleY: number("motion.chapterTitleY", -500, -1),
+    chapterTitleDuration: number("motion.chapterTitleDuration", 0.1, 5),
+    chapterTitleViewportX: number("motion.chapterTitleViewportX", 0, 1),
     panoramaY: number("motion.panoramaY", -500, 500), haloScale: number("motion.haloScale", 0, 1),
-    willY: number("motion.willY", -500, 500), irisCoverRatio: number("motion.irisCoverRatio", 0.1, 0.9),
+    irisCoverRatio: number("motion.irisCoverRatio", 0.1, 0.9),
     irisX: number("motion.irisX", 0, 1), irisY: number("motion.irisY", 0, 1),
     irisRadius: number("motion.irisRadius", 1, 2),
     cyanRadius: number("motion.cyanRadius", 0.5, 3),
@@ -83,7 +103,8 @@ export function parseScrollyConfig(source: string) {
   const slots = Object.fromEntries(Object.entries(SLOT_LAYERS).map(([id, layer]) => {
     const prefix = `slot.${id}`;
     const slot: AssetSlot = {
-      name: text(`${prefix}.name`), x: number(`${prefix}.x`, 0, layerWidth(layout, parallax[layer])),
+      name: text(`${prefix}.name`), src: assetSource(`${prefix}.src`),
+      x: number(`${prefix}.x`, 0, layerWidth(layout, parallax[layer])),
       y: number(`${prefix}.y`, -layout.referenceHeight, layout.referenceHeight),
       width: number(`${prefix}.width`, 1, layout.worldWidth),
       height: number(`${prefix}.height`, 1, layout.referenceHeight * 3),
@@ -98,7 +119,13 @@ export function parseScrollyConfig(source: string) {
     const worldX = number(`${prefix}.x`, 0, layout.worldWidth);
     if (worldX <= previousX) throw new Error(`${prefix}.x 必须大于前一节点位置`);
     previousX = worldX;
-    return { id, type: type as StationData["type"], worldX, label: text(`${prefix}.label`) };
+    return {
+      id,
+      displayId: text(`${prefix}.displayId`),
+      type: type as StationData["type"],
+      worldX,
+      label: text(`${prefix}.label`),
+    };
   });
   return {
     layout, parallax, duration, milestones, motion, slots, stations,

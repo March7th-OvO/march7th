@@ -6,12 +6,21 @@ export const SLOT_LAYERS = {
   "background-a": "background", "background-b": "background", "background-c": "background",
   "portrait-01": "hero", "portrait-02": "hero", "portrait-03": "hero", "portrait-04": "hero",
   "panorama-character": "hero", "halo-hero": "hero", "memory-character": "hero", "final-character": "hero",
-  "title-opening": "typography", "title-laterano": "typography", "title-will": "typography", "eternity-title": "typography",
+  "title-prologue": "typography", "title-act-1": "typography", "title-act-2": "typography",
+  "title-act-3": "typography", "title-act-4": "typography", "title-act-5": "typography",
   "foreground-object": "foreground", "foreground-disc-a": "foreground", "foreground-disc-b": "foreground",
   "extreme-bar-a": "extreme", "extreme-bar-b": "extreme",
 } as const satisfies Record<string, LayerName>;
 export type SlotId = keyof typeof SLOT_LAYERS;
-export type AssetSlot = { name: string; x: number; y: number; width: number; height: number };
+export type AssetSlot = {
+  name: string;
+  /** 公开目录相对路径、站内绝对路径或完整 HTTPS URL；空字符串保留素材占位。 */
+  src: string;
+  x: number;
+  y: number;
+  width: number;
+  height: number;
+};
 export function worldDistance(layout: { worldWidth: number; referenceWidth: number }) {
   return layout.worldWidth - layout.referenceWidth;
 }

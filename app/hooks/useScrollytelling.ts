@@ -74,16 +74,23 @@ export function useScrollytelling(refs: ScrollyRefs, config: ScrollyConfig, enab
       master.fromTo(".portrait-card", { autoAlpha: 0, scaleY: m.cardScaleY, y: m.cardY }, {
         autoAlpha: 1, scaleY: 1, y: 0, duration: t.CARDS_EXPAND - t.CARDS_START, stagger: m.cardStagger, ease: "power2.out",
       }, t.CARDS_START);
+      // 标题的入场时间由其横向位置反推；同一 Master Timeline 在反向滚动时自动向上退场。
+      const typographyTravel = worldDistance(layout) * parallax.typography;
+      surface.querySelectorAll<HTMLElement>(".chapter-title-motion").forEach(title => {
+        const slot = title.closest<HTMLElement>(".scrolly-slot");
+        if (!slot) return;
+        const revealTime = gsap.utils.clamp(0, duration - m.chapterTitleDuration,
+          (slot.offsetLeft - layout.referenceWidth * m.chapterTitleViewportX) / typographyTravel * duration);
+        master.fromTo(title, { autoAlpha: 0, y: m.chapterTitleY }, {
+          autoAlpha: 1, y: 0, duration: m.chapterTitleDuration, ease: "power2.out",
+        }, revealTime);
+      });
       master.fromTo(".panorama-motion", { autoAlpha: 0, y: m.panoramaY }, {
         autoAlpha: 1, y: 0, duration: t.PANORAMA_MAIN - t.PANORAMA_START, ease: "power2.out",
       }, t.PANORAMA_START);
       master.fromTo(".halo-motion", { autoAlpha: 0, scale: m.haloScale }, {
         autoAlpha: 1, scale: 1, duration: t.THE_WILL_ENTER - t.HALO_ENTER, ease: "power2.out",
       }, t.HALO_ENTER);
-      master.fromTo(".will-motion", { autoAlpha: 0, y: m.willY }, {
-        autoAlpha: 1, y: 0, duration: t.GREEN_IRIS_START - t.THE_WILL_ENTER,
-      }, t.THE_WILL_ENTER);
-
       // 低透明度色层缓慢显隐；即使快速跨越时间点，也不会跳到不透明的整屏亮色。
       const softenOverlay = (selector: string, start: number, end: number, opacity: number) => {
         const fadeDuration = (end - start) * m.transitionFadeRatio;

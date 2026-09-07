@@ -10,12 +10,12 @@ export default function FixedHUD({ progressRef, timeRef, sceneRef }: FixedHUDPro
   // SSR 预渲染也不输出开发 HUD，保证生产 hydration 一致。
   const showDebug = (!import.meta.env.SSR && import.meta.env.DEV) || debug;
   return <div className="scrolly-hud">
-    <div className="scrolly-hud-nav" aria-label="导航占位"><span>BACK</span><span>HOME</span></div>
-    <div className="scrolly-hud-shop"><strong>CAMPUS SHOP</strong><span>HUD PLACEHOLDER</span></div>
+    <div className="scrolly-hud-nav" aria-label="导航占位"><span>返回</span><span>首页</span></div>
+    <div className="scrolly-hud-shop"><strong>校园商店</strong><span>界面占位</span></div>
     {showDebug && <div className="scrolly-debug" aria-label="Scrollytelling 调试信息">
-      <span>SCROLL PROGRESS <b ref={progressRef}>0.000</b></span>
-      <span>TIMELINE TIME <b ref={timeRef}>0.00</b></span>
-      <span>CURRENT SCENE <b ref={sceneRef}>WORLD_A</b></span>
+      <span>滚动进度 <b ref={progressRef}>0.000</b></span>
+      <span>时间轴时间 <b ref={timeRef}>0.00</b></span>
+      <span>当前场景 <b ref={sceneRef}>WORLD_A</b></span>
     </div>}
   </div>;
 }

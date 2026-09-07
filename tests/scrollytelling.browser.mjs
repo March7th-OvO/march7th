@@ -59,7 +59,10 @@ try {
       scene: get("#memories").dataset.scene,
       layers: Object.fromEntries([...document.querySelectorAll("[data-parallax]")].map(el => [el.dataset.parallax, new DOMMatrix(getComputedStyle(el).transform).m41])),
       cards: [...document.querySelectorAll(".portrait-card")].map(el => +getComputedStyle(el).opacity),
-      will: +css(".will-motion").opacity,
+      chapterTitles: [...document.querySelectorAll(".chapter-title-motion")].map(el => {
+        const style = getComputedStyle(el), matrix = new DOMMatrix(style.transform);
+        return { opacity: +style.opacity, y: matrix.m42 };
+      }),
       cover: +get(".green-iris-cover").getAttribute("r"), aperture: +get(".green-iris-aperture").getAttribute("r"),
       irisOpacity: +css(".green-iris").opacity, cyanOpacity: +css(".cyan-transition").opacity,
       cyan: x(".cyan-surface"), flash: +css(".cyan-flash").opacity, memory: css(".memory-reveal").clipPath,
@@ -78,8 +81,9 @@ try {
   }
   assert.equal(samples[0].cards[0], 0);
   assert.equal(samples[2].cards[3], 1);
-  assert.ok(samples[5].will > 0);
   const at = time => samples[times.indexOf(time)];
+  assert.ok(at(3.5).chapterTitles[0].opacity > 0 && at(3.5).chapterTitles[0].y < 0);
+  assert.ok(at(7).chapterTitles[1].opacity > 0 && at(7).chapterTitles[1].y < 0);
   assert.ok(at(14.1).cover > at(14.1).aperture && at(14.1).aperture > 0);
   assert.equal(at(15.1).cover, at(15.1).aperture);
   assert.equal(at(15.1).irisOpacity, 0);
@@ -110,6 +114,10 @@ try {
     assert.equal(reversed.irisOpacity, original.irisOpacity);
     assert.equal(reversed.cyanOpacity, original.cyanOpacity);
     assert.deepEqual(reversed.cards, original.cards);
+    reversed.chapterTitles.forEach((title, titleIndex) => {
+      assert.ok(Math.abs(title.opacity - original.chapterTitles[titleIndex].opacity) < 0.001);
+      assert.ok(Math.abs(title.y - original.chapterTitles[titleIndex].y) < 0.1);
+    });
     assert.equal(reversed.memory, original.memory);
   }
   await seek(10);
@@ -152,7 +160,7 @@ try {
   // 运行时异常必须给出配置键，并移除当前 pin/timeline。
   const config = await (await page.request.get(`${base}/config/scrollytelling.properties`)).text();
   await page.route("**/config/scrollytelling.properties", route => route.fulfill({
-    body: config.replace("layout.scrollDistance=9800", "layout.scrollDistance=12000").replace("station.SR-1.label=LATERANO", "station.SR-1.label=RUNTIME STATION").replace("motion.flashEnabled=false", "motion.flashEnabled=true"),
+    body: config.replace("layout.scrollDistance=9800", "layout.scrollDistance=12000").replace("station.SR-1.label=雅利洛-Ⅵ", "station.SR-1.label=运行时站点").replace("motion.flashEnabled=false", "motion.flashEnabled=true"),
   }));
   await page.reload();
   await page.waitForLoadState("networkidle");
@@ -160,7 +168,7 @@ try {
   await attachInspector();
   assert.equal((await info()).count, 1);
   assert.equal((await info()).end - (await info()).start, 12000);
-  assert.equal(await page.getByText("RUNTIME STATION", { exact: true }).count(), 1);
+  assert.equal(await page.getByText("运行时站点", { exact: true }).count(), 1);
   await seek(19.56);
   assert.ok((await snapshot()).flash < 0.02, "开启后也不能快速升至高亮");
   await seek(20.1);
