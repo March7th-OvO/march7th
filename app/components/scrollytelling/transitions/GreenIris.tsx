@@ -11,6 +11,6 @@ export default function GreenIris() {
       <circle className="green-iris-cover" cx={cx} cy={cy} r="0" fill="white" />
       <circle className="green-iris-aperture" cx={cx} cy={cy} r="0" fill="black" />
     </mask></defs>
-    <rect width={width} height={height} fill="var(--scrolly-green)" mask={`url(#${maskId})`} />
+    <rect width={width} height={height} fill="var(--scrolly-decorative-purple)" mask={`url(#${maskId})`} />
   </svg>;
 }

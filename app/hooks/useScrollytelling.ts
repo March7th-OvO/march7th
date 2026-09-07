@@ -85,6 +85,17 @@ export function useScrollytelling(refs: ScrollyRefs, config: ScrollyConfig, enab
           autoAlpha: 1, y: 0, duration: m.chapterTitleDuration, ease: "power2.out",
         }, revealTime);
       });
+      // 收尾文案按前景位置进入画面，并从中心向两侧揭示；反向滚动自动收回中心。
+      const journey = surface.querySelector<HTMLElement>(".journey-message-motion");
+      const journeySlot = journey?.closest<HTMLElement>(".scrolly-slot");
+      if (journey && journeySlot) {
+        const foregroundTravel = worldDistance(layout) * parallax.foreground;
+        const revealTime = gsap.utils.clamp(0, duration - m.journeyRevealDuration,
+          (journeySlot.offsetLeft - layout.referenceWidth * m.journeyRevealViewportX) / foregroundTravel * duration);
+        master.fromTo(journey, { autoAlpha: 0, clipPath: "inset(0 50% 0 50%)" }, {
+          autoAlpha: 1, clipPath: "inset(0 0% 0 0%)", duration: m.journeyRevealDuration, ease: "power2.inOut",
+        }, revealTime);
+      }
       master.fromTo(".panorama-motion", { autoAlpha: 0, y: m.panoramaY }, {
         autoAlpha: 1, y: 0, duration: t.PANORAMA_MAIN - t.PANORAMA_START, ease: "power2.out",
       }, t.PANORAMA_START);

@@ -85,6 +85,8 @@ export function parseScrollyConfig(source: string) {
     chapterTitleY: number("motion.chapterTitleY", -500, -1),
     chapterTitleDuration: number("motion.chapterTitleDuration", 0.1, 5),
     chapterTitleViewportX: number("motion.chapterTitleViewportX", 0, 1),
+    journeyRevealDuration: number("motion.journeyRevealDuration", 0.1, 5),
+    journeyRevealViewportX: number("motion.journeyRevealViewportX", 0, 1),
     panoramaY: number("motion.panoramaY", -500, 500), haloScale: number("motion.haloScale", 0, 1),
     irisCoverRatio: number("motion.irisCoverRatio", 0.1, 0.9),
     irisX: number("motion.irisX", 0, 1), irisY: number("motion.irisY", 0, 1),
@@ -130,7 +132,17 @@ export function parseScrollyConfig(source: string) {
   return {
     layout, parallax, duration, milestones, motion, slots, stations,
     debug: boolean("debug.enabled"),
-    colors: { background: color("color.background"), far: color("color.far"), hero: color("color.hero"), green: color("color.green"), cyan: color("color.cyan"), transitionCyan: color("color.transitionCyan") },
+    // 色板使用视觉职责命名，避免场景实现继续依赖历史颜色名称。
+    colors: {
+      lightBackground: color("color.lightBackground"),
+      softSurface: color("color.softSurface"),
+      primaryPink: color("color.primaryPink"),
+      iceHighlight: color("color.iceHighlight"),
+      vividAccent: color("color.vividAccent"),
+      night: color("color.night"),
+      secondaryBlue: color("color.secondaryBlue"),
+      decorativePurple: color("color.decorativePurple"),
+    },
   };
 }
 export type ScrollyConfig = ReturnType<typeof parseScrollyConfig>;

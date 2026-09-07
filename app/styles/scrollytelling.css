@@ -1,66 +1,90 @@
+/* 本地加载中文展示字体；League Script 已由全局 hero-photo.css 以相同方式加载。 */
+@font-face {
+  font-family: "ZCOOL KuaiLe";
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url("/fonts/zcool-kuaile/zcool-kuaile-regular.ttf") format("truetype");
+}
+
 /* 统一层级；World 不创建 stacking context，Walker 可插在 Rail 与 Foreground 之间。 */
 .scrollytelling {
   --z-far: 0; --z-background: 10; --z-typography: 20; --z-hero: 30;
   --z-rail: 40; --z-walker: 50; --z-foreground: 60; --z-extreme: 65;
-  --z-ambient: 70; --z-transitions: 80; --z-hud: 100;
-  position: relative; min-height: 100svh; color: white; background: #050a17; isolation: isolate;
+  --z-ambient: 70; --z-journey: 75; --z-transitions: 80; --z-hud: 100;
+  position: relative; min-height: 100svh; color: inherit; background: transparent; isolation: isolate;
 }
 .scrollytelling * { box-sizing: border-box; }
-.scrolly-stage { position: relative; width: 100%; height: 100svh; overflow: hidden; background: var(--scrolly-bg); }
+.scrolly-stage { position: relative; width: 100%; height: 100svh; overflow: hidden; color: var(--scrolly-light-bg); background: var(--scrolly-light-bg); }
 .scrolly-design-surface {
   position: absolute; top: 50%; left: 50%; width: var(--reference-width); height: var(--reference-height);
-  overflow: hidden; background: var(--scrolly-far);
+  overflow: hidden; background: var(--scrolly-night);
   transform: translate(-50%, -50%) scale(var(--stage-scale, 1)); transform-origin: center;
 }
 .scrolly-world, .scrolly-layer { position: absolute; inset: 0 auto 0 0; height: var(--reference-height); }
 .scrolly-world { width: var(--world-width); }
 .scrolly-layer { pointer-events: none; }
 .scrollytelling[data-enhanced] .scrolly-layer { will-change: transform; }
-.scrolly-layer-far { z-index: var(--z-far); background: var(--scrolly-far); }
+.scrolly-layer-far { z-index: var(--z-far); background: var(--scrolly-night); }
 .scrolly-layer-background { z-index: var(--z-background); }
 .scrolly-layer-typography { z-index: var(--z-typography); }
 .scrolly-layer-hero { z-index: var(--z-hero); }
 .scrolly-layer-rail { z-index: var(--z-rail); }
 .scrolly-layer-foreground { z-index: var(--z-foreground); }
 .scrolly-layer-extreme { z-index: var(--z-extreme); }
+.scrolly-layer-journey { z-index: var(--z-journey); }
 
-.scrolly-grid { position: absolute; inset: 0; opacity: .25; background-image: linear-gradient(#6e9ac026 1px, transparent 1px), linear-gradient(90deg, #6e9ac026 1px, transparent 1px); background-size: 64px 64px; }
+.scrolly-grid { position: absolute; inset: 0; opacity: .42; background-image: linear-gradient(color-mix(in srgb, var(--scrolly-ice-highlight) 16%, transparent) 1px, transparent 1px), linear-gradient(90deg, color-mix(in srgb, var(--scrolly-ice-highlight) 16%, transparent) 1px, transparent 1px); background-size: 64px 64px; }
 .scrolly-slot { position: absolute; }
 .scrolly-slot-motion { position: relative; width: 100%; height: 100%; }
 .scrolly-slot-motion > img, .scrolly-slot-motion > picture, .scrolly-slot-motion > picture > img { display: block; width: 100%; height: 100%; object-fit: contain; }
-.scrolly-asset-placeholder { width: var(--asset-width); height: var(--asset-height); display: grid; place-content: center; gap: 10px; border: 1px solid #d9f6ffb8; background: #1a579e73; color: #fff; text-align: center; box-shadow: inset 0 0 0 8px #0713295c; }
+.scrolly-asset-placeholder { width: var(--asset-width); height: var(--asset-height); display: grid; place-content: center; gap: 10px; border: 1px solid color-mix(in srgb, var(--scrolly-ice-highlight) 72%, transparent); background: color-mix(in srgb, var(--scrolly-secondary-blue) 46%, transparent); color: var(--scrolly-light-bg); text-align: center; box-shadow: inset 0 0 0 8px color-mix(in srgb, var(--scrolly-night) 36%, transparent); }
 .scrolly-asset-placeholder span { font: 700 16px/1.1 monospace; letter-spacing: .12em; }
-.scrolly-asset-placeholder small { color: #bcefff; font: 11px/1 monospace; letter-spacing: .12em; }
+.scrolly-asset-placeholder small { color: var(--scrolly-ice-highlight); font: 11px/1 monospace; letter-spacing: .12em; }
 .scrolly-layer-far .scrolly-slot { opacity: .32; }
 .scrolly-layer-background .scrolly-slot { opacity: .5; }
-.scrolly-layer-hero .scrolly-asset-placeholder { background: var(--scrolly-hero); }
-.portrait-card { transform-origin: top center; visibility: hidden; }
-.panorama-motion, .halo-motion, .chapter-title-motion { visibility: hidden; }
+.scrolly-layer-hero .scrolly-asset-placeholder { background: var(--scrolly-primary-pink); color: var(--scrolly-night); }
+.portrait-card { visibility: hidden; transform-origin: top center; }
+.panorama-motion, .halo-motion, .chapter-title-motion, .journey-message-motion { visibility: hidden; }
 .halo-hero .scrolly-asset-placeholder { border-radius: 50%; }
 .memory-reveal { clip-path: circle(0% at 50% 50%); }
 
 .scrollytelling .hero-title { margin: 0; font: 900 118px/.82 Impact, "Arial Narrow", sans-serif; letter-spacing: -.045em; text-transform: uppercase; }
 .scrollytelling .decorative-title { margin: 0; font: italic 400 96px/1 Georgia, serif; }
 .scrollytelling .micro-label { margin: 0; font: 700 11px/1.2 monospace; letter-spacing: .2em; }
-.scrollytelling .outline-title { position: absolute; top: 7px; left: 9px; color: transparent; -webkit-text-stroke: 2px var(--scrolly-cyan); opacity: .72; }
-.scrollytelling .chapter-title { margin: 0; color: #bcefff3d; font: 900 104px/.9 Impact, "Arial Narrow", sans-serif; letter-spacing: -.035em; white-space: nowrap; }
-.scrolly-rail-line { position: absolute; left: 0; top: var(--rail-y); width: 100%; height: 2px; background: white; }
-.scrolly-station { position: absolute; top: calc(var(--rail-y) - 18px); min-width: 150px; height: 36px; display: grid; grid-template-columns: 24px auto; grid-template-rows: 1fr 1fr; align-items: center; column-gap: 7px; padding: 4px 10px 4px 7px; color: #071329; background: white; box-shadow: 5px 6px 0 #0310276e; }
-.scrolly-station-hex { grid-row: 1 / 3; width: 22px; height: 22px; background: var(--scrolly-cyan); clip-path: polygon(25% 7%, 75% 7%, 100% 50%, 75% 93%, 25% 93%, 0 50%); }
+.scrollytelling .outline-title { position: absolute; top: 7px; left: 9px; color: transparent; -webkit-text-stroke: 2px var(--scrolly-vivid-accent); opacity: .82; }
+.scrollytelling .chapter-title {
+  margin: 0;
+  color: var(--scrolly-primary-pink);
+  background: linear-gradient(90deg, var(--scrolly-primary-pink) 0%, var(--scrolly-soft-surface) 45%, var(--scrolly-ice-highlight) 100%);
+  background-clip: text;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  font: 900 104px/.9 Impact, "Arial Narrow", sans-serif;
+  letter-spacing: -.035em;
+  white-space: nowrap;
+}
+.scrolly-rail-line { position: absolute; left: 0; top: var(--rail-y); width: var(--rail-solid-end, 100%); height: 2px; background: var(--scrolly-ice-highlight); box-shadow: 0 0 12px color-mix(in srgb, var(--scrolly-vivid-accent) 55%, transparent); }
+.scrolly-rail-tail { position: absolute; left: var(--rail-tail-start); top: var(--rail-y); width: var(--rail-tail-width); height: 2px; background: repeating-linear-gradient(90deg, var(--scrolly-ice-highlight) 0 8px, transparent 8px 16px); }
+.scrolly-station { position: absolute; top: calc(var(--rail-y) - 18px); min-width: 150px; height: 36px; display: grid; grid-template-columns: 24px auto; grid-template-rows: 1fr 1fr; align-items: center; column-gap: 7px; padding: 4px 10px 4px 7px; color: var(--scrolly-night); background: var(--scrolly-light-bg); box-shadow: 5px 6px 0 color-mix(in srgb, var(--scrolly-decorative-purple) 45%, transparent); }
+.scrolly-station-hex { grid-row: 1 / 3; width: 22px; height: 22px; background: var(--scrolly-vivid-accent); clip-path: polygon(25% 7%, 75% 7%, 100% 50%, 75% 93%, 25% 93%, 0 50%); }
 .scrolly-station-id { font: 800 10px/1 monospace; letter-spacing: .06em; }
 .scrolly-station strong { font: 800 8px/1 monospace; letter-spacing: .08em; }
 
-.scrolly-layer-foreground .scrolly-asset-placeholder { background: #dff7ff2b; }
+.scrolly-layer-foreground .scrolly-asset-placeholder { background: color-mix(in srgb, var(--scrolly-soft-surface) 22%, transparent); }
 .foreground-object { transform: rotate(-6deg); }
-.foreground-disc-a .scrolly-asset-placeholder, .foreground-disc-b .scrolly-asset-placeholder { border: 35px solid #e9faff57; border-radius: 50%; }
+.journey-message { display: flex; align-items: center; width: 100%; height: 100%; margin: 0; color: var(--scrolly-light-bg); font: 400 24px/1.2 "ZCOOL KuaiLe", "Microsoft YaHei", sans-serif; white-space: nowrap; }
+.journey-message-motion { overflow: hidden; transform-origin: center; will-change: clip-path, opacity; }
+.journey-signature { margin: 0 .15em; color: var(--scrolly-ice-highlight); font: 400 1.45em/1 "League Script", cursive; }
+.foreground-disc-a .scrolly-asset-placeholder, .foreground-disc-b .scrolly-asset-placeholder { border: 35px solid color-mix(in srgb, var(--scrolly-primary-pink) 34%, transparent); border-radius: 50%; }
 .extreme-bar-a { transform: rotate(-18deg); }
 .extreme-bar-b { transform: rotate(15deg); }
-.scrolly-layer-extreme .scrolly-asset-placeholder { color: #071329; background: #eefbffe3; }
+.scrolly-layer-extreme .scrolly-asset-placeholder { color: var(--scrolly-night); background: color-mix(in srgb, var(--scrolly-light-bg) 90%, transparent); }
 .scrolly-layer-extreme .scrolly-asset-placeholder span { font-size: 11px; }
-.scrolly-layer-extreme .scrolly-asset-placeholder small { color: #071329; }
+.scrolly-layer-extreme .scrolly-asset-placeholder small { color: var(--scrolly-night); }
 
 /* Walker 只预留 walking/idle 状态；没有独立循环或自动播放。脚底位于 84% 高度。 */
-.scrolly-walker { position: absolute; z-index: var(--z-walker); left: var(--walker-x); top: calc(var(--walker-y) - 93px); width: 56px; height: 100px; color: #fff; }
+.scrolly-walker { position: absolute; z-index: var(--z-walker); left: var(--walker-x); top: calc(var(--walker-y) - 93px); width: 56px; height: 100px; color: var(--scrolly-light-bg); filter: drop-shadow(0 0 9px color-mix(in srgb, var(--scrolly-primary-pink) 58%, transparent)); }
 .walker-head, .walker-body, .walker-leg { position: absolute; display: block; background: currentColor; }
 .walker-head { left: 18px; top: 0; width: 24px; height: 24px; border-radius: 50%; }
 .walker-body { left: 13px; top: 26px; width: 34px; height: 42px; }
@@ -74,21 +98,21 @@
 }
 .scrolly-hud-surface { z-index: var(--z-hud); transform: translate(-50%, -50%) scale(var(--stage-scale, 1)); pointer-events: none; }
 .scrolly-transition { position: absolute; inset: 0; width: 100%; height: 100%; overflow: hidden; }
-.cyan-surface { position: absolute; border-radius: 50%; background: var(--scrolly-transition-cyan); }
+.cyan-surface { position: absolute; border-radius: 50%; background: var(--scrolly-vivid-accent); }
 /* 未初始化时也不输出亮色覆盖；透明度包络完全由 master timeline 控制。 */
 .green-iris, .cyan-transition, .cyan-flash { opacity: 0; }
 .scrollytelling:not([data-enhanced]) .scrolly-transition-layer { display: none; }
-.scrolly-ambient-placeholder { position: absolute; z-index: var(--z-ambient); right: var(--safe-area); top: 50%; opacity: .45; writing-mode: vertical-rl; font: 8px/1 monospace; letter-spacing: .17em; pointer-events: none; }
+.scrolly-ambient-placeholder { position: absolute; z-index: var(--z-ambient); right: var(--safe-area); top: 50%; color: var(--scrolly-soft-surface); opacity: .62; writing-mode: vertical-rl; font: 8px/1 monospace; letter-spacing: .17em; pointer-events: none; }
 .scrolly-hud { position: absolute; inset: 0; z-index: var(--z-hud); pointer-events: none; }
-.scrolly-hud-nav { position: absolute; top: var(--safe-area); left: var(--safe-area); display: flex; background: #000c; }
-.scrolly-hud-nav span { padding: 10px 14px; color: white; border-right: 1px solid #ffffff45; font: 800 10px/1 monospace; letter-spacing: .12em; }
-.scrolly-hud-shop { position: absolute; left: var(--safe-area); bottom: var(--safe-area); display: flex; flex-direction: column; gap: 4px; padding: 12px 15px; background: #000c; }
+.scrolly-hud-nav { position: absolute; top: var(--safe-area); left: var(--safe-area); display: flex; background: color-mix(in srgb, var(--scrolly-night) 88%, transparent); }
+.scrolly-hud-nav span { padding: 10px 14px; color: var(--scrolly-light-bg); border-right: 1px solid color-mix(in srgb, var(--scrolly-soft-surface) 38%, transparent); font: 800 10px/1 monospace; letter-spacing: .12em; }
+.scrolly-hud-shop { position: absolute; left: var(--safe-area); bottom: var(--safe-area); display: flex; flex-direction: column; gap: 4px; padding: 12px 15px; background: color-mix(in srgb, var(--scrolly-night) 88%, transparent); }
 .scrolly-hud-shop strong { font: 800 12px/1 monospace; letter-spacing: .1em; }
-.scrolly-hud-shop span { color: #9cdcf2; font: 8px/1 monospace; letter-spacing: .12em; }
-.scrolly-debug { position: absolute; right: var(--safe-area); bottom: var(--safe-area); display: grid; gap: 5px; min-width: 238px; padding: 11px 13px; color: #aeeaff; background: #000d; font: 9px/1.2 monospace; letter-spacing: .08em; }
+.scrolly-hud-shop span { color: var(--scrolly-ice-highlight); font: 8px/1 monospace; letter-spacing: .12em; }
+.scrolly-debug { position: absolute; right: var(--safe-area); bottom: var(--safe-area); display: grid; gap: 5px; min-width: 238px; padding: 11px 13px; color: var(--scrolly-ice-highlight); background: color-mix(in srgb, var(--scrolly-night) 92%, transparent); font: 9px/1.2 monospace; letter-spacing: .08em; }
 .scrolly-debug span { display: flex; justify-content: space-between; gap: 16px; }
-.scrolly-debug b { color: white; font-weight: 700; }
-.scrolly-error { padding: 40px; color: white; }
+.scrolly-debug b { color: var(--scrolly-light-bg); font-weight: 700; }
+.scrolly-error { padding: 40px; color: inherit; }
 .scrollytelling[data-config-error="true"] .scrolly-stage { display: none; }
 
 /* 竖屏使用方形取景窗口：保留横向叙事与左侧角色，同时避免 1280×576 被 contain 成一条窄横带。 */
@@ -116,7 +140,7 @@
   .scrolly-asset-placeholder { max-width: 100%; height: 280px; }
   .scrollytelling .hero-title { font-size: clamp(36px, 7vw, 80px); }
   .scrollytelling .decorative-title { font-size: 48px; }
-  .scrolly-rail-line { display: none; }
+  .scrolly-rail-line, .scrolly-rail-tail { display: none; }
   .scrolly-layer-rail [aria-label] { display: flex; flex-wrap: wrap; gap: 16px; }
   .scrolly-station { position: relative; left: auto !important; top: auto; }
 }

@@ -63,6 +63,11 @@ try {
         const style = getComputedStyle(el), matrix = new DOMMatrix(style.transform);
         return { opacity: +style.opacity, y: matrix.m42 };
       }),
+      journey: {
+        opacity: +css(".journey-message-motion").opacity,
+        clipPath: css(".journey-message-motion").clipPath,
+        z: +css(".scrolly-layer-journey").zIndex,
+      },
       cover: +get(".green-iris-cover").getAttribute("r"), aperture: +get(".green-iris-aperture").getAttribute("r"),
       irisOpacity: +css(".green-iris").opacity, cyanOpacity: +css(".cyan-transition").opacity,
       cyan: x(".cyan-surface"), flash: +css(".cyan-flash").opacity, memory: css(".memory-reveal").clipPath,
@@ -84,6 +89,10 @@ try {
   const at = time => samples[times.indexOf(time)];
   assert.ok(at(3.5).chapterTitles[0].opacity > 0 && at(3.5).chapterTitles[0].y < 0);
   assert.ok(at(7).chapterTitles[1].opacity > 0 && at(7).chapterTitles[1].y < 0);
+  assert.equal(at(20.9).journey.opacity, 0);
+  assert.equal(samples.at(-1).journey.opacity, 1);
+  assert.match(samples.at(-1).journey.clipPath, /inset\(0px\)/);
+  assert.ok(samples.at(-1).journey.z > 70);
   assert.ok(at(14.1).cover > at(14.1).aperture && at(14.1).aperture > 0);
   assert.equal(at(15.1).cover, at(15.1).aperture);
   assert.equal(at(15.1).irisOpacity, 0);
@@ -118,6 +127,8 @@ try {
       assert.ok(Math.abs(title.opacity - original.chapterTitles[titleIndex].opacity) < 0.001);
       assert.ok(Math.abs(title.y - original.chapterTitles[titleIndex].y) < 0.1);
     });
+    assert.ok(Math.abs(reversed.journey.opacity - original.journey.opacity) < 0.001);
+    assert.equal(reversed.journey.clipPath, original.journey.clipPath);
     assert.equal(reversed.memory, original.memory);
   }
   await seek(10);

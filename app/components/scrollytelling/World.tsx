@@ -3,6 +3,7 @@ import ExtremeForegroundLayer from "./layers/ExtremeForegroundLayer";
 import FarBackground from "./layers/FarBackground";
 import ForegroundLayer from "./layers/ForegroundLayer";
 import HeroLayer from "./layers/HeroLayer";
+import JourneyLayer from "./layers/JourneyLayer";
 import TypographyLayer from "./layers/TypographyLayer";
 import MissionRail from "./MissionRail";
 
@@ -10,6 +11,6 @@ import MissionRail from "./MissionRail";
 export default function World() {
   return <div className="scrolly-world" aria-label="连续横向动画世界">
     <FarBackground /><BackgroundLayer /><TypographyLayer /><HeroLayer />
-    <MissionRail /><ForegroundLayer /><ExtremeForegroundLayer />
+    <MissionRail /><ForegroundLayer /><ExtremeForegroundLayer /><JourneyLayer />
   </div>;
 }

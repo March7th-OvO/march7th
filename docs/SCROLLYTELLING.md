@@ -88,6 +88,8 @@ Milestone 值在公开配置的 `timeline.*`；键名、类型和纯场景状态
 进度写入 ref 与 Debug 文本，不逐帧更新 React state。
 序幕至第五幕的背景大字分别位于对应节点之后；入场时间由标题横向位置自动换算，
 随 Master Timeline 从上向下出现，反向滚动时按原路径向上退场。
+收尾文案使用独立的最高世界前景层，最终落点为设计坐标 `(390, 380)`；
+它随 Master Timeline 从中心向两侧揭示，反向滚动时收回中心。
 
 ## 调整滚动与素材
 
@@ -99,7 +101,7 @@ Milestone 值在公开配置的 `timeline.*`；键名、类型和纯场景状态
 slot.x ≈ WORLD_DISTANCE × layerFactor × (目标时间 / timeline.duration) + 画面内目标 x
 ```
 
-7 个章节 Station（包含序幕前的“六相冰”节点）的固定标识与类型在 `app/data/stations.ts`，
+8 个 Station（包含序幕前的“六相冰”和第五幕后“未完待续”节点）的固定标识与类型在 `app/data/stations.ts`，
 实际数据在 `station.<id>.type/x/displayId/label`，由解析器转换后 map 渲染。
 `displayId` 是页面展示的简体中文编号；`SR-*` 仅作为稳定的内部配置键与节点标识。
 节点不含点击或路由行为。
@@ -117,14 +119,18 @@ slot.panorama-character.src=assets/scrollytelling/panorama-character.webp
 素材替换不改 Scene/Layer 的 JSX、插槽 id 或动画 class，也不影响 GSAP 时间轴。
 
 Green Iris 使用单一 SVG mask：覆盖圆和透明孔重叠展开，避免整屏填满后突然挖孔。
-区间由原先 0.3 延长至 1.4 个时间轴秒，颜色改为灰绿，峰值透明度 0.14。
+区间由原先 0.3 延长至 1.4 个时间轴秒，颜色使用紫色装饰色，峰值透明度 0.14。
 圆心、覆盖与揭示时长占比、半径和透明度由 `motion.iris*` 控制；
 `irisApertureStartRatio` 必须小于 `irisCoverRatio`，保留提前揭示。
 Cyan Transition 在 `transitions/CyanTransition.tsx`，圆心与半径为 `motion.cyan*`；
 MemoryScene 的角色 wrapper 使用 `clip-path: circle()` 揭示。
-Cyan 圆面以恒定速度通过画面，峰值透明度 0.16，使用独立的低亮度
-`color.transitionCyan`；角色从转场开始就揭示，底层构图始终透过色层可见。
+Cyan 圆面以恒定速度通过画面，峰值透明度 0.16，使用高饱和强调色
+`color.vividAccent`；角色从转场开始就揭示，底层构图始终透过色层可见。
 两种色层使用 `motion.transitionFadeRatio` 控制柔和入场和退场。
+
+Scrollytelling 的主题色完整维护在公开配置的 `color.*`：浅色背景、柔和卡片、核心粉色、
+冰晶高光、高饱和强调、夜空/深色文字、次级蓝色和紫色装饰共八项。CSS 只引用由 Stage
+注入的语义变量，半透明网格、阴影和覆盖层通过这些基色派生，不另存重复色值。
 
 Cyan Flash 默认通过 `motion.flashEnabled=false` 关闭。
 手动开启时，它是 1.4 个时间轴秒的细弧光：峰值透明度 0.08，

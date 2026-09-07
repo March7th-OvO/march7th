@@ -21,9 +21,14 @@ export default function Stage({ stageRef, designRef, ...debugRefs }: StageProps)
     "--world-width": `${layout.worldWidth}px`, "--safe-area": `${layout.safeArea}px`,
     "--rail-y": `${layout.railY * 100}%`, "--walker-y": `${layout.walkerY * 100}%`,
     "--walker-x": `${layout.walkerStartX * 100}%`,
-    "--scrolly-bg": colors.background, "--scrolly-far": colors.far, "--scrolly-hero": colors.hero,
-    "--scrolly-green": colors.green, "--scrolly-cyan": colors.cyan,
-    "--scrolly-transition-cyan": colors.transitionCyan,
+    "--scrolly-light-bg": colors.lightBackground,
+    "--scrolly-soft-surface": colors.softSurface,
+    "--scrolly-primary-pink": colors.primaryPink,
+    "--scrolly-ice-highlight": colors.iceHighlight,
+    "--scrolly-vivid-accent": colors.vividAccent,
+    "--scrolly-night": colors.night,
+    "--scrolly-secondary-blue": colors.secondaryBlue,
+    "--scrolly-decorative-purple": colors.decorativePurple,
   } as CSSProperties;
   return <div className="scrolly-stage" ref={stageRef} style={style}>
     <div className="scrolly-design-surface" ref={designRef}>

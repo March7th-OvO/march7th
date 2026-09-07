@@ -9,6 +9,7 @@ export const SLOT_LAYERS = {
   "title-prologue": "typography", "title-act-1": "typography", "title-act-2": "typography",
   "title-act-3": "typography", "title-act-4": "typography", "title-act-5": "typography",
   "foreground-object": "foreground", "foreground-disc-a": "foreground", "foreground-disc-b": "foreground",
+  "journey-card": "foreground",
   "extreme-bar-a": "extreme", "extreme-bar-b": "extreme",
 } as const satisfies Record<string, LayerName>;
 export type SlotId = keyof typeof SLOT_LAYERS;
