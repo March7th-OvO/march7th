@@ -2,7 +2,7 @@
 
 首页入口仍为 `#memories`。本次移除了旧的 `horizontal-scene/`、`journey.properties`
 和旧配置测试，用 React + GSAP + ScrollTrigger + @gsap/react + CSS + SVG 重建。
-首页其余区域和独立相册页面保持原有功能。所有新场景素材均为标注名称的占位元素。
+首页其余区域和独立相册页面保留。当前四张开场 portrait 已配置 CDN 图片，其余图片插槽按 `slot.*.src` 显示素材或标注名称的占位元素。
 
 ## 文件与职责
 
@@ -17,7 +17,7 @@ app/components/scrollytelling/
   AssetSlot.tsx             世界几何坐标 + 独立 motion wrapper
   AssetPlaceholder.tsx      name/width/height/className 占位边界
   MissionRail.tsx           连续 Rail 与数据 map
-  Station.tsx               白色矩形、黑字、cyan 六边形节点
+  Station.tsx               使用语义主题色的矩形标签与六边形节点
   layers/
     Layer.tsx               图层宽度与标识
     FarBackground.tsx
@@ -26,6 +26,7 @@ app/components/scrollytelling/
     HeroLayer.tsx
     ForegroundLayer.tsx
     ExtremeForegroundLayer.tsx
+    JourneyLayer.tsx         独立最高世界层级，复用 foreground 位移的收尾文案
   scenes/
     OpeningScene.tsx         四张 portrait card
     PanoramaScene.tsx        panorama 角色
@@ -67,7 +68,7 @@ timelineTime = timeline.duration × progress
 HUD 完全独立，倍率为 0。World 父节点不额外平移，避免重复计算。
 层宽按 `referenceWidth + WORLD_DISTANCE × factor` 计算，不在 CSS 重复维护。
 
-统一设计坐标为 1280×576。World 和 HUD 使用 contain 缩放，保留构图比例和 safe area；
+统一设计坐标为 1280×576。World 和 HUD 在横屏使用 contain 缩放；竖屏按 Stage 高度缩放，可能裁掉横向内容，并非始终 contain；
 Transition 单独使用 cover 缩放，确保其他宽高比下也能覆盖整个 viewport。
 图层 z-index 集中在 CSS 顶部；World 不创建额外 stacking context，
 Walker 能位于 Rail 上方、Foreground 下方。
@@ -168,7 +169,9 @@ node tests/scrollytelling.browser.mjs
 三个桌面尺寸与移动端不溢出、结束解除 pin、减少动态效果切换、运行时非法配置清理。
 截图与机器可读结果输出至被 Git 忽略的 `outputs/scrollytelling/`。
 
-本次验证结果：TypeScript、ESLint、7 项构建/配置测试和浏览器回归均通过。
+以下为此前实现阶段的历史验证记录，不代表后续任务已执行相同检查；当前自动测试范围以 `tests/*.test.mjs` 为准。
+
+当时验证结果：TypeScript、ESLint、7 项构建/配置测试和浏览器回归均通过。
 滚动采样期间 React 提交次数固定为 2（初次挂载与运行时配置加载）；1920×1080 生产静态
 预览无 hydration 错误、无 Debug HUD，只有一个 Scrollytelling pin spacer。
 浏览器替换运行时配置后，滚动长度变为 12000px 且节点文案更新成功。
@@ -179,6 +182,6 @@ node tests/scrollytelling.browser.mjs
 
 ## 当前简化范围
 
-这是动画架构原型。背景、人物、halo、前景、Walker 均为明确标注的占位素材；
+这是动画架构原型。四张开场 portrait 已使用正式图片，背景、其余人物、halo、前景、Walker 等仍保留占位素材；
 HUD 无导航功能，Station 无任务逻辑。未制作正式字体、人物 sprite、花瓣、音频、
 WebGL、逐像素视频复刻或完整移动端排版。移动端沿用等比缩放，减少动态效果模式改为静态内容流。

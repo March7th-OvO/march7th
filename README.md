@@ -28,9 +28,15 @@ npm start          # 本地预览生产构建
 - `app/App.tsx`：应用根组件
 - `app/Home.tsx`：纪念站主页面
 - `worker/index.ts`：Cloudflare Workers 静态资源入口
-- `wrangler.jsonc`：Workers 与 SPA 回退配置
+- `wrangler.jsonc`：Workers 静态资源与真实 404 配置
 
 部署细节见 [CLOUDFLARE_WORKERS.md](./CLOUDFLARE_WORKERS.md)。
+
+## 项目知识导航
+
+- [Repo Wiki](./docs/repo-wiki/index.md)：架构、核心模块、跨模块流程与源码入口。
+- [Agent 知识索引](./.knowledge/index.md)：按任务搜索的长期约束与易错点。
+- [AGENTS.md](./AGENTS.md)：工程规则、上下文加载和知识维护协议。
 
 ## 横向 Scrollytelling 原型
 
